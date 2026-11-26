@@ -1,0 +1,1045 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1D2B36">
+<title>Duelo da Homeostase: Tabuleiro de Ciências (6º Ano)</title>
+<style>
+:root{
+  --paper:#FBF6EC; --paper2:#F3E9D6; --card:#FFFDF8; --ink:#1D2B36; --ink2:#566673; --line:#E2D4BC;
+  --teal:#0E7C7B; --teal-l:#D3ECE8; --coral:#E8553E; --coral-l:#FBE1DA; --mustard:#F2B134; --mustard-l:#FCEBC2;
+  --ok:#2E9D5B; --ok-l:#DCF2E3; --bad:#D64045; --bad-l:#FBDFDE;
+  --display:"Rockwell","Rockwell Nova","Roboto Slab","Bookman Old Style","Georgia",serif;
+  --body:"Segoe UI Variable Text","Segoe UI","Trebuchet MS","Helvetica Neue",sans-serif;
+  --badge:52px; --hud:62px; --tabs:62px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{background:var(--paper);color:var(--ink);font-family:var(--body);-webkit-tap-highlight-color:transparent;
+  background-image:radial-gradient(circle at 1px 1px,rgba(29,43,54,.08) 1px,transparent 0);background-size:22px 22px;overscroll-behavior:none}
+button{font:inherit;color:inherit;cursor:pointer;border:0;background:none;padding:0}
+input,textarea,select{font:inherit;color:inherit}
+.ico{width:1.2em;height:1.2em;flex:none;display:block}
+.screen{display:none}.screen.on{display:block}
+.muted{color:var(--ink2)}
+.kicker{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;font-weight:800;color:var(--teal)}
+h1,h2,h3{font-family:var(--display);margin:0;line-height:1.1}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.5em;min-height:48px;padding:0 1.05rem;border-radius:14px;font-weight:800;
+  border:2px solid var(--ink);background:var(--card);box-shadow:0 3px 0 var(--ink);transition:transform .08s,box-shadow .08s;text-align:center;line-height:1.15}
+.btn:active{transform:translateY(3px);box-shadow:0 0 0 var(--ink)}
+.btn.primary{background:var(--teal);color:#fff}
+.btn.ok{background:var(--ok);color:#fff}.btn.bad{background:var(--bad);color:#fff}
+.btn.warn{background:var(--mustard)}.btn.coral{background:var(--coral);color:#fff}
+.btn.ghost{box-shadow:none;border-color:var(--line);background:transparent}
+.btn.ghost:active{transform:none;background:var(--paper2)}
+.btn:disabled{opacity:.38;pointer-events:none}
+.btn.block{width:100%}
+.btn.lg{min-height:62px;font-size:1.12rem;border-radius:18px}
+.linkbtn{display:inline-flex;align-items:center;gap:.35em;color:var(--ink2);font-size:.88rem;font-weight:700;padding:10px 4px;min-height:44px}
+.linkbtn:hover{color:var(--teal)}
+.iconbtn{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;border:2px solid var(--line);background:#fff}
+.iconbtn:disabled{opacity:.3}
+.card{background:var(--card);border:2px solid var(--ink);border-radius:20px;padding:16px;box-shadow:0 4px 0 var(--ink)}
+
+.pawn{position:relative;width:28px;height:28px;border-radius:50%;display:inline-grid;place-items:center;color:#fff;border:2px solid #fff;
+  box-shadow:0 0 0 1.5px var(--ink),0 2px 0 1.5px var(--ink);flex:none}
+.pawn .ico{width:15px;height:15px}
+.pawn em{position:absolute;right:-7px;bottom:-6px;font-style:normal;font-size:9px;font-weight:900;background:#fff;color:var(--ink);border:1.5px solid var(--ink);border-radius:6px;padding:0 3px;line-height:13px}
+.pawn.xl{width:48px;height:48px}.pawn.xl .ico{width:24px;height:24px}.pawn.xl em{font-size:11px;line-height:15px}
+.pawn.lg{width:36px;height:36px}.pawn.lg .ico{width:19px;height:19px}
+.pawn.turn{animation:bob 1.1s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-4px)}}
+
+/* SETUP */
+#setup .wrap{max-width:780px;margin:0 auto;padding:22px 14px calc(var(--badge) + 28px)}
+.hero{position:relative;padding:10px 4px 22px}
+.hero h1{font-size:clamp(2.2rem,8vw,3.6rem);letter-spacing:-.01em}
+.hero h1 span{color:var(--coral)}
+.hero p{max-width:34em;margin:.7rem 0 0;color:var(--ink2);line-height:1.5}
+.hero svg.deco{position:absolute;right:0;top:0;width:clamp(90px,22vw,150px);opacity:.9}
+.sec{margin-top:16px}
+.sec h2{font-size:1.25rem;display:flex;align-items:center;gap:.5rem;margin-bottom:12px}
+.sec h2 small{font-family:var(--body);font-size:.8rem;font-weight:700;color:var(--ink2);background:var(--paper2);padding:2px 9px;border-radius:99px}
+.trow{display:grid;grid-template-columns:52px minmax(0,1fr) 44px;gap:10px;align-items:start;padding:12px;border:2px dashed var(--line);border-radius:16px;margin-bottom:10px;background:#fff}
+.trow .avatar{padding-top:2px}
+.inp{width:100%;min-height:46px;border:2px solid var(--line);border-radius:12px;padding:0 12px;background:#fff;outline:none}
+.inp:focus{border-color:var(--teal)}
+textarea.inp{padding:10px 12px;min-height:84px;resize:vertical;line-height:1.4}
+.picks{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.pick{width:40px;height:40px;border-radius:11px;border:2px solid var(--line);display:grid;place-items:center;background:#fff}
+.pick.on{border-color:var(--ink);background:var(--ink);color:#fff}
+.swatches{display:flex;gap:7px;flex-wrap:wrap;margin-top:9px}
+.sw{width:30px;height:30px;border-radius:50%;border:3px solid #fff;box-shadow:0 0 0 2px var(--line)}
+.sw.on{box-shadow:0 0 0 2.5px var(--ink)}
+.seg{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.seg button{min-height:58px;border:2px solid var(--line);border-radius:14px;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.seg button b{font-family:var(--display);font-size:1.4rem}
+.seg button small{font-size:.72rem;color:var(--ink2);font-weight:700}
+.seg button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.seg button.on small{color:#cfd8de}
+.stepper{display:grid;grid-template-columns:52px minmax(0,1fr) 52px;gap:8px;align-items:center}
+.stepper button{min-height:52px;border:2px solid var(--line);border-radius:14px;background:#fff;font-size:1.5rem;font-weight:800}
+.stepper label{display:flex;align-items:baseline;justify-content:center;gap:6px;border:2px solid var(--ink);border-radius:14px;min-height:52px;background:#fff}
+.stepper input{width:3.2ch;border:0;outline:0;text-align:right;font-family:var(--display);font-size:1.6rem;font-weight:800;background:transparent;padding:8px 0;-moz-appearance:textfield}
+.stepper input::-webkit-inner-spin-button{display:none}
+.legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.chip{display:inline-flex;align-items:center;gap:6px;font-size:.8rem;font-weight:700;padding:6px 10px;border-radius:99px;border:1.5px solid var(--ink)}
+.chip.imp{background:var(--mustard-l)}.chip.bri{background:var(--teal-l)}
+.grid2{display:grid;gap:14px}
+@media(min-width:640px){.grid2{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.startbar{margin-top:18px}
+
+/* GAME */
+.hud{position:fixed;top:0;left:0;right:0;height:var(--hud);display:flex;align-items:center;gap:8px;padding:0 10px;background:var(--ink);color:var(--paper);z-index:30}
+.hud .brand{display:none;font-family:var(--display);font-size:1.05rem;white-space:nowrap;margin-right:6px}
+.hud .brand span{color:var(--mustard)}
+.htimer{display:flex;align-items:center;gap:6px;min-height:46px;padding:0 10px;border-radius:12px;background:rgba(255,255,255,.1);border:1.5px solid rgba(255,255,255,.22)}
+.htimer b{font-family:var(--display);font-size:1.45rem;font-variant-numeric:tabular-nums;letter-spacing:.02em}
+.htimer.paused b{opacity:.55}
+.htimer.warn{background:var(--mustard);color:var(--ink);border-color:var(--mustard)}
+.htimer.danger{background:var(--coral);color:#fff;border-color:var(--coral);animation:pulse 1s infinite}
+@keyframes pulse{50%{filter:brightness(1.15)}}
+.hturn{flex:1;min-width:0;display:flex;align-items:center;gap:8px;min-height:46px;padding:0 6px;border-radius:12px;text-align:left}
+.hturn .txt{min-width:0;line-height:1.1}
+.hturn small{display:block;font-size:.66rem;text-transform:uppercase;letter-spacing:.12em;opacity:.7;font-weight:700}
+.hturn b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:.95rem}
+.hconsult{position:relative;overflow:hidden;display:flex;align-items:center;gap:6px;min-height:46px;padding:0 12px;border-radius:12px;background:var(--mustard);color:var(--ink);font-weight:900}
+.hconsult i{position:absolute;left:0;bottom:0;height:4px;background:var(--ink);width:0}
+.hconsult span{position:relative}
+.hconsult.done{background:var(--coral);color:#fff}
+
+.layout{position:fixed;top:var(--hud);left:0;right:0;bottom:calc(var(--tabs) + var(--badge))}
+.view{display:none;height:100%;overflow:auto;padding:14px 12px 22px;-webkit-overflow-scrolling:touch}
+.view.active{display:block}
+.rightcol{display:contents}
+.tabs{position:fixed;left:0;right:0;bottom:0;height:calc(var(--tabs) + var(--badge));padding-bottom:var(--badge);display:grid;grid-template-columns:repeat(3,minmax(0,1fr));
+  background:var(--card);border-top:2px solid var(--ink);z-index:30}
+.tabs button{min-height:48px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:.78rem;font-weight:800;color:var(--ink2);position:relative}
+.tabs button .ico{width:22px;height:22px}
+.tabs button.on{color:var(--teal)}
+.tabs button.on::before{content:"";position:absolute;top:-2px;left:22%;right:22%;height:4px;border-radius:0 0 4px 4px;background:var(--teal)}
+.tabs .dot{position:absolute;top:8px;right:calc(50% - 20px);width:9px;height:9px;border-radius:50%;background:var(--coral);display:none}
+.tabs .dot.on{display:block}
+
+@media(min-width:768px){
+  .hud .brand{display:block}
+  .hud{padding:0 18px;gap:12px}
+  .hturn{flex:0 1 auto;margin-right:auto;background:rgba(255,255,255,.06);padding:0 12px}
+  .tabs{display:none}
+  .layout{bottom:0;display:grid;grid-template-columns:minmax(0,55fr) minmax(0,45fr)}
+  .view{display:block;padding:18px 18px 22px}
+  #v-board{border-right:2px solid var(--ink);padding-bottom:calc(var(--badge) + 18px)}
+  .rightcol{display:block;height:100%;overflow:auto;padding-bottom:var(--badge);background:rgba(243,233,214,.45)}
+  .rightcol .view{height:auto;overflow:visible}
+  #v-teams{padding-top:0}
+}
+
+.bhead{display:flex;align-items:flex-end;justify-content:space-between;gap:10px;margin-bottom:12px}
+.bhead h2{font-size:clamp(1.25rem,3.4vw,1.7rem)}
+.bhead h2 span{color:var(--teal)}
+.bhead .count{font-size:.8rem;font-weight:800;color:var(--ink2);white-space:nowrap}
+.board{position:relative;display:grid;gap:10px}
+.board svg.track{position:absolute;left:0;top:0;pointer-events:none;z-index:0;overflow:visible}
+.cell{position:relative;z-index:1;aspect-ratio:1/.92;min-width:0;border:2px solid var(--ink);border-radius:16px;background:#fff;display:flex;flex-direction:column;padding:6px 6px 7px;box-shadow:0 3px 0 var(--ink)}
+.cell .num{font-family:var(--display);font-weight:800;font-size:1.05rem;line-height:1}
+.cell .lbl{font-size:.6rem;font-weight:800;text-transform:uppercase;letter-spacing:.05em;line-height:1.1;margin-top:2px;display:flex;align-items:center;gap:3px}
+.cell .lbl .ico{width:13px;height:13px}
+.cell.imp{background:var(--mustard-l)}
+.cell.bri{background:var(--teal-l)}
+.cell.start{background:var(--paper2)}
+.cell.goal{background:var(--ink);color:var(--paper)}
+.cell.goal .lbl{color:var(--mustard)}
+.cell.flash{animation:flash .9s ease}
+@keyframes flash{30%{box-shadow:0 0 0 6px var(--mustard)}}
+.cell .pawns{margin-top:auto;display:flex;flex-wrap:wrap;gap:4px 6px;align-items:flex-end;padding-right:6px}
+.cell .pawns.many{gap:2px 4px}
+.cell .pawns.many .pawn{width:21px;height:21px}
+.cell .pawns.many .pawn .ico{width:11px;height:11px}
+.cell .pawns.many .pawn em{display:none}
+.roster{display:flex;flex-wrap:wrap;gap:8px 14px;margin-top:16px;padding-top:12px;border-top:2px dashed var(--line)}
+.roster span.r{display:inline-flex;align-items:center;gap:7px;font-size:.85rem;font-weight:700}
+
+.qcard{background:var(--card);border:2px solid var(--ink);border-radius:22px;padding:16px;box-shadow:0 4px 0 var(--ink)}
+.qcard.empty{text-align:center;padding:28px 18px}
+.qcard.empty h2{font-size:1.6rem;margin:.4rem 0 .3rem}
+.qcard.empty svg.big{width:76px;height:76px;margin:0 auto 6px;color:var(--teal)}
+.qhead{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.tag{display:inline-block;font-size:.72rem;font-weight:900;text-transform:uppercase;letter-spacing:.08em;background:var(--teal-l);color:var(--teal);padding:5px 10px;border-radius:99px;border:1.5px solid var(--teal)}
+.qnum{font-size:.78rem;font-weight:800;color:var(--ink2)}
+.turnstrip{display:flex;align-items:center;gap:10px;margin:12px 0 4px;padding:8px 10px;border-radius:14px;background:var(--paper2);border-left:6px solid var(--teamc)}
+.turnstrip small{display:block;font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--ink2)}
+.turnstrip b{font-size:1rem}
+.turnstrip.rebound{background:var(--coral-l)}
+.qtext{font-size:clamp(1.05rem,2.4vw,1.22rem);line-height:1.5;font-weight:600;margin:12px 0 6px}
+.opt{display:grid;grid-template-columns:40px minmax(0,1fr) auto;gap:10px;align-items:center;width:100%;text-align:left;min-height:56px;padding:9px 11px;border:2px solid var(--line);border-radius:14px;background:#fff;margin-top:8px;line-height:1.35;transition:border-color .15s,background .15s}
+.opt .let{width:36px;height:36px;border-radius:10px;background:var(--paper2);display:grid;place-items:center;font-family:var(--display);font-weight:800;font-size:1.05rem}
+.opt .mark{width:24px;height:24px}
+.opt.sel{border-color:var(--ink);box-shadow:0 0 0 3px var(--teamc)}
+.opt.sel .let{background:var(--teamc);color:#fff}
+.opt.elim{opacity:.42;text-decoration:line-through}
+.opt.right{border-color:var(--ok);background:var(--ok-l);color:#14512e}.opt.right .let{background:var(--ok);color:#fff}
+.opt.wrong{border-color:var(--bad);background:var(--bad-l);color:#7a1d20}.opt.wrong .let{background:var(--bad);color:#fff}
+.opt:disabled{cursor:default}
+.consult{display:grid;grid-template-columns:auto minmax(0,1fr) 3.2ch;gap:10px;align-items:center;margin:16px 0 10px}
+.cbar{height:16px;border-radius:99px;background:var(--paper2);overflow:hidden;border:2px solid var(--ink)}
+.cbar i{display:block;height:100%;width:100%;background:var(--mustard);transform-origin:left;transform:scaleX(1)}
+.cbar.done i{background:var(--coral)}
+.consult b{font-family:var(--display);font-variant-numeric:tabular-nums;text-align:right}
+.cmsg{display:none;font-weight:900;color:var(--coral);text-align:center;margin:-2px 0 10px}
+.cmsg.on{display:block;animation:shake .5s}
+@keyframes shake{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+.note{font-size:.84rem;color:var(--ink2);margin:8px 0;line-height:1.4}
+.explain{margin:14px 0 4px;border:2px solid var(--ok);background:var(--ok-l);padding:12px 14px;border-radius:14px;line-height:1.45}
+.explain .v{display:block;font-weight:900;margin-bottom:4px}
+.explain.miss{border-color:var(--bad);background:#fff}
+.actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:14px}
+.actions .full{grid-column:1/-1}
+
+.ph{display:flex;align-items:center;justify-content:space-between;margin:4px 0 12px;gap:8px}
+.ph h2{font-size:1.3rem}
+.team{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:12px;padding:10px 10px 10px 12px;border:2px solid var(--line);border-radius:16px;background:#fff;width:100%;text-align:left;margin-bottom:8px;cursor:pointer}
+.team.turn{border-color:var(--ink);box-shadow:0 0 0 3px var(--teamc)}
+.team .nm{font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.team .meta{font-size:.78rem;color:var(--ink2);font-weight:700;margin-top:2px}
+.team .bar{height:6px;border-radius:9px;background:var(--paper2);margin-top:6px;overflow:hidden}
+.team .bar i{display:block;height:100%;background:var(--teamc);border-radius:9px}
+.team .adj{display:flex;gap:4px}
+.team .adj button{width:38px;height:38px;border-radius:10px;border:2px solid var(--line);font-weight:900;font-size:1.1rem;background:var(--card)}
+.vez{font-size:.62rem;font-weight:900;text-transform:uppercase;letter-spacing:.08em;background:var(--ink);color:#fff;border-radius:6px;padding:1px 6px;margin-left:6px;vertical-align:2px}
+.ctrl{margin-top:16px}
+.ctrl .big{font-family:var(--display);font-size:2.6rem;font-variant-numeric:tabular-nums;text-align:center;margin:4px 0 10px}
+.ctrl .row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.ctrl .row + .row{margin-top:10px}
+
+.modal{position:fixed;inset:0;background:rgba(29,43,54,.55);display:none;align-items:flex-end;justify-content:center;z-index:60;padding:12px 12px calc(12px + var(--badge))}
+.modal.on{display:flex}
+@media(min-width:768px){.modal{align-items:center}}
+.sheet{background:var(--card);border:2px solid var(--ink);border-radius:24px;width:min(540px,100%);max-height:calc(100dvh - 90px);overflow:auto;padding:18px;box-shadow:0 6px 0 var(--ink);animation:up .25s ease}
+@keyframes up{from{transform:translateY(30px);opacity:0}}
+.sheet h3{font-size:1.4rem;margin-bottom:4px}
+.sheet .sub{color:var(--ink2);margin:0 0 6px}
+.field{display:block;margin-top:12px}
+.field > span{display:block;font-size:.78rem;font-weight:800;margin-bottom:5px}
+.optrow{display:grid;grid-template-columns:46px minmax(0,1fr);gap:8px;align-items:center;margin-top:8px}
+.optrow label{display:grid;place-items:center;height:46px;border-radius:12px;border:2px solid var(--line);font-family:var(--display);font-weight:800;cursor:pointer}
+.optrow input[type=radio]{display:none}
+.optrow input[type=radio]:checked + label{background:var(--ok);border-color:var(--ok);color:#fff}
+.clist{margin-top:14px;border-top:2px dashed var(--line);padding-top:10px}
+.clist .ci{display:grid;grid-template-columns:minmax(0,1fr) 44px;gap:8px;align-items:center;font-size:.85rem;padding:6px 0}
+.clist .ci span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+.wheelwrap{position:relative;width:min(270px,72vw);aspect-ratio:1/1;margin:14px auto 8px}
+.wheel{position:absolute;inset:0;border-radius:50%;border:4px solid var(--ink);box-shadow:0 5px 0 var(--ink);
+  background:conic-gradient(var(--teal) 0 120deg,var(--coral) 120deg 240deg,var(--mustard) 240deg 360deg);transition:transform 2.9s cubic-bezier(.15,.7,.1,1)}
+.wheel .sl{position:absolute;inset:0}
+.wheel .sl span{position:absolute;left:50%;top:13%;transform:translateX(-50%);width:42%;text-align:center;font-weight:900;font-size:.82rem;line-height:1.15;color:#fff;text-shadow:0 1px 0 rgba(0,0,0,.25)}
+.wheel .sl.dark span{color:var(--ink);text-shadow:none}
+.wheel::after{content:"";position:absolute;left:50%;top:50%;width:22%;height:22%;transform:translate(-50%,-50%);border-radius:50%;background:var(--card);border:4px solid var(--ink)}
+.pointer{position:absolute;left:50%;top:-14px;transform:translateX(-50%);width:0;height:0;border-left:15px solid transparent;border-right:15px solid transparent;border-top:28px solid var(--ink);z-index:2}
+.wres{min-height:64px;text-align:center}
+.wres h4{font-family:var(--display);font-size:1.35rem;margin:6px 0 4px}
+.targets{display:grid;gap:8px;margin-top:10px}
+.targets button{display:flex;align-items:center;gap:10px;padding:8px 12px;border:2px solid var(--line);border-radius:14px;background:#fff;min-height:52px;font-weight:800;text-align:left}
+.targets button small{margin-left:auto;color:var(--ink2)}
+
+#toasts{position:fixed;left:50%;top:calc(var(--hud) + 10px);transform:translateX(-50%);z-index:80;display:flex;flex-direction:column;gap:8px;align-items:center;width:min(92vw,460px);pointer-events:none}
+.toast{background:var(--ink);color:var(--paper);padding:11px 16px;border-radius:14px;font-weight:700;font-size:.92rem;box-shadow:0 4px 14px rgba(0,0,0,.18);animation:tin .25s ease;text-align:center}
+.toast.warn{background:var(--mustard);color:var(--ink)}.toast.good{background:var(--ok)}.toast.bad{background:var(--coral)}
+@keyframes tin{from{transform:translateY(-10px);opacity:0}}
+
+#end .wrap{max-width:760px;margin:0 auto;padding:26px 14px calc(var(--badge) + 30px);text-align:center}
+#end h1{font-size:clamp(2rem,7vw,3.2rem)}
+#end .reason{color:var(--ink2);margin:.6rem 0 1.4rem;font-size:1.05rem}
+.podium{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));align-items:end;gap:10px;max-width:520px;margin:0 auto}
+.pcol{display:flex;flex-direction:column;align-items:center;gap:8px;min-width:0}
+.pcol .pn{font-weight:900;font-size:.92rem;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pcol .pm{font-size:.76rem;color:var(--ink2);font-weight:700}
+.step{width:100%;border:2px solid var(--ink);border-bottom:0;border-radius:16px 16px 0 0;display:grid;place-items:center;font-family:var(--display);font-size:2rem;font-weight:800;transform-origin:bottom;animation:grow .7s cubic-bezier(.2,.9,.3,1.3) both}
+.p1 .step{height:150px;background:var(--mustard)}.p2 .step{height:110px;background:var(--teal-l);animation-delay:.15s}.p3 .step{height:80px;background:var(--coral-l);animation-delay:.3s}
+@keyframes grow{from{transform:scaleY(0)}}
+.floor{height:10px;background:var(--ink);border-radius:4px;max-width:540px;margin:0 auto 22px}
+.rank{text-align:left;margin:0 auto;max-width:540px}
+.rank .rr{display:grid;grid-template-columns:34px auto minmax(0,1fr) auto;gap:10px;align-items:center;padding:10px 12px;border:2px solid var(--line);border-radius:14px;background:#fff;margin-bottom:8px}
+.rank .rr b.n{font-family:var(--display);font-size:1.2rem}
+.rank .rr .st{font-size:.78rem;color:var(--ink2);font-weight:700;text-align:right}
+.endbtns{display:grid;gap:10px;max-width:540px;margin:20px auto 0}
+
+@media print{
+  .hud,.tabs,#toasts,.modal,.actions,.consult,.ctrl,.linkbtn{display:none!important}
+  .layout{position:static;display:block}
+  .view{display:block!important;height:auto;overflow:visible}
+  .rightcol{display:block;height:auto}
+}
+</style>
+</head>
+<body>
+<div id="setup" class="screen"><div class="wrap" id="setupWrap"></div></div>
+
+<div id="game" class="screen">
+  <header class="hud">
+    <div class="brand">Duelo da <span>Homeostase</span></div>
+    <button class="htimer" id="hudTimer" data-act="timer" aria-label="Pausar ou retomar cronômetro"></button>
+    <button class="hturn" id="hudTurn" data-act="tab" data-tab="teams" aria-label="Equipe da vez"></button>
+    <button class="hconsult" id="hudConsult" data-act="consult" aria-label="Consulta 20 segundos"></button>
+  </header>
+  <main class="layout">
+    <section class="view" id="v-board"></section>
+    <div class="rightcol">
+      <section class="view" id="v-question"></section>
+      <section class="view" id="v-teams"></section>
+    </div>
+  </main>
+  <nav class="tabs">
+    <button data-act="tab" data-tab="board" id="tab-board"><span class="ti"></span>Tabuleiro</button>
+    <button data-act="tab" data-tab="question" id="tab-question"><span class="ti"></span>Questão da Rodada<span class="dot" id="qdot"></span></button>
+    <button data-act="tab" data-tab="teams" id="tab-teams"><span class="ti"></span>Equipes/Placar</button>
+  </nav>
+</div>
+
+<div id="end" class="screen"><div class="wrap" id="endWrap"></div></div>
+
+<div class="modal" id="mWheel"><div class="sheet" style="text-align:center">
+  <div class="kicker">Roleta Bônus</div>
+  <h3 id="wTitle">Gire a roleta!</h3>
+  <p class="sub" id="wSub"></p>
+  <div class="wheelwrap"><div class="pointer"></div><div class="wheel" id="wheel"></div></div>
+  <div class="wres" id="wRes"></div>
+  <div id="wBtns"></div>
+</div></div>
+
+<div class="modal" id="mNewQ"><div class="sheet">
+  <div class="kicker">Banco de questões</div>
+  <h3>+ Nova Questão</h3>
+  <p class="sub">Fica salva neste aparelho e entra no sorteio junto com as 100 do capítulo.</p>
+  <label class="field"><span>Assunto (etiqueta)</span><input class="inp" id="nqTag" placeholder="Ex.: Sistema Endócrino" maxlength="40"></label>
+  <label class="field"><span>Enunciado</span><textarea class="inp" id="nqText" placeholder="Digite a pergunta"></textarea></label>
+  <div class="field"><span>Alternativas (toque na letra para marcar a correta)</span><div id="nqOpts"></div></div>
+  <label class="field"><span>Explicação curta (aparece só ao revelar)</span><textarea class="inp" id="nqExp" style="min-height:64px"></textarea></label>
+  <div class="actions"><button class="btn ghost" data-act="closeModal">Cancelar</button><button class="btn primary" data-act="saveQ">Salvar questão</button></div>
+  <div class="clist" id="nqList"></div>
+</div></div>
+
+<div class="modal" id="mConfirm"><div class="sheet">
+  <h3 id="cTitle"></h3><p class="sub" id="cMsg"></p>
+  <div class="actions"><button class="btn ghost" data-act="closeModal">Cancelar</button><button class="btn coral" data-act="confirmYes" id="cYes">Confirmar</button></div>
+</div></div>
+
+<div id="toasts" aria-live="polite"></div>
+<script>
+"use strict";
+/* ================= ÍCONES ================= */
+const ICONS={
+  hipofise:'<path d="M12 2.5v5"/><path d="M9 2.5h6"/><path d="M6.3 13.2C6.3 9.7 8.8 7.5 12 7.5s5.7 2.2 5.7 5.7c0 4-2.6 8.3-5.7 8.3s-5.7-4.3-5.7-8.3z"/><path d="M12 7.5v14"/>',
+  neuronio:'<circle cx="12" cy="11" r="3"/><path d="M12 8V3M9.6 9.3 5.5 5.5M14.4 9.3l4.1-3.8M10 13.4 5 18M12 14v3.5l3.5 3.5M14 13l5 2.5"/>',
+  coracao:'<path d="M12 20.5s-7.5-4.6-7.5-10.4A4.1 4.1 0 0 1 12 7.6a4.1 4.1 0 0 1 7.5 2.5c0 5.8-7.5 10.4-7.5 10.4z"/>',
+  escudo:'<path d="M12 2.8l7.5 3v5.6c0 5-3.7 8.6-7.5 10-3.8-1.4-7.5-5-7.5-10V5.8z"/><path d="M9 12l2 2 4-4"/>',
+  raio:'<path d="M13.5 2 4.5 13.5h6.5L10 22l9-11.5h-6.5z"/>',
+  estrela:'<path d="M12 2.8l2.8 5.8 6.3.9-4.6 4.4 1.1 6.3L12 17.2l-5.6 3 1.1-6.3-4.6-4.4 6.3-.9z"/>',
+  bridge:'<path d="M2 17h20M5 17v-4.5M19 17v-4.5M2 12.5c3.5 0 6.5-4.5 10-4.5s6.5 4.5 10 4.5M9 17v-7.3M15 17v-7.3"/>',
+  dice:'<rect x="3.5" y="3.5" width="17" height="17" rx="3.5"/><circle cx="8.5" cy="8.5" r="1.3" fill="currentColor"/><circle cx="15.5" cy="15.5" r="1.3" fill="currentColor"/><circle cx="15.5" cy="8.5" r="1.3" fill="currentColor"/><circle cx="8.5" cy="15.5" r="1.3" fill="currentColor"/><circle cx="12" cy="12" r="1.3" fill="currentColor"/>',
+  book:'<path d="M4 4.5A1.5 1.5 0 0 1 5.5 3H20v15H5.5A1.5 1.5 0 0 0 4 19.5z"/><path d="M4 19.5A1.5 1.5 0 0 0 5.5 21H20v-3M8 7h8"/>',
+  eye:'<path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>',
+  check:'<path d="M5 12.5l4.5 4.5L19 7"/>',
+  x:'<path d="M6 6l12 12M18 6 6 18"/>',
+  skip:'<path d="M5 5l9 7-9 7z"/><path d="M19 5v14"/>',
+  play:'<path d="M7 4.5l12.5 7.5L7 19.5z"/>',
+  pause:'<path d="M8.5 5v14M15.5 5v14"/>',
+  reset:'<path d="M3.5 4v6h6"/><path d="M5.2 15.5A7.5 7.5 0 1 0 6.8 7.2L3.5 10"/>',
+  trash:'<path d="M4 7h16M9.5 7V4h5v3M6 7l1 13.5h10L18 7"/>',
+  plus:'<path d="M12 5v14M5 12h14"/>',
+  board:'<rect x="3" y="3" width="7.5" height="7.5" rx="2"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="2"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="2"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="2"/>',
+  question:'<circle cx="12" cy="12" r="9"/><path d="M9.4 9.4a2.6 2.6 0 1 1 3.7 2.4c-.7.3-1.1.9-1.1 1.7M12 17h.01"/>',
+  users:'<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.5-3.5 3.2-5.5 6.5-5.5s6 2 6.5 5.5"/><path d="M16 4.6a3.5 3.5 0 0 1 0 6.8M18 14.8c2 .7 3.2 2.5 3.5 5.2"/>',
+  trophy:'<path d="M8 3.5h8v5.5a4 4 0 0 1-8 0z"/><path d="M8 5.5H4.5a3.5 3.5 0 0 0 3.7 4.3M16 5.5h3.5a3.5 3.5 0 0 1-3.7 4.3M12 13v4M8 21h8M9 17h6"/>',
+  flag:'<path d="M5 21V3.5M5 4h12l-2.5 4.5L17 13H5"/>',
+  clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>'
+};
+function svg(n,c){return '<svg class="ico '+(c||'')+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+(ICONS[n]||'')+'</svg>';}
+const ICON_NAMES={hipofise:'Hipófise',neuronio:'Neurônio',coracao:'Coração',escudo:'Escudo',raio:'Raio',estrela:'Estrela'};
+const TEAM_ICONS=Object.keys(ICON_NAMES);
+const COLORS=['#E8553E','#0E7C7B','#7A4CC9','#E59A0C','#2E9D5B','#D23F7E','#2D6BD2','#8A5A2B','#1D2B36','#13A3B5'];
+
+/* ================= BANCO DE QUESTÕES (Cap. 12) ================= */
+function Q(id,tag,text,opts,ans,exp){return {id:id,tag:tag,text:text,opts:opts,ans:'ABCD'.indexOf(ans),exp:exp};}
+const BANK=[
+/* ---- Sistema Endócrino ---- */
+Q('h1','Sistema Endócrino','Os hormônios são substâncias muito importantes para o funcionamento do corpo. Eles podem ser definidos como:',
+ ['mensageiros químicos que viajam pelo sangue até as células-alvo.','impulsos elétricos que percorrem apenas os nervos.','enzimas digestivas liberadas dentro do estômago.','células de defesa que combatem bactérias.'],'A','Hormônios são mensageiros químicos produzidos por glândulas endócrinas e levados pelo sangue até as células-alvo.'),
+Q('h2','Sistema Endócrino','As glândulas endócrinas lançam os hormônios que produzem:',
+ ['dentro do intestino.','para fora do corpo, pelo suor.','diretamente na corrente sanguínea.','na boca, junto com a saliva.'],'C','“Endócrina” significa secreção para dentro: os hormônios vão direto para o sangue.'),
+Q('h3','Sistema Endócrino','Um hormônio percorre o corpo inteiro pelo sangue, mas só age em alguns órgãos. As células que reconhecem e respondem a um hormônio específico são chamadas de:',
+ ['células do sangue que fabricam hormônios.','células que existem apenas no cérebro.','células mortas eliminadas pela urina.','células-alvo.'],'D','Cada hormônio atua apenas nas suas células-alvo, que são capazes de reconhecê-lo.'),
+Q('h4','Sistema Endócrino','A hipófise recebe o apelido de “glândula-mestra” porque:',
+ ['é a maior glândula do corpo humano.','regula o funcionamento de várias outras glândulas.','é a única glândula que produz insulina.','fica localizada no pescoço.'],'B','A hipófise produz hormônios tróficos que comandam outras glândulas, como tireoide, suprarrenais e gônadas.'),
+Q('h5','Sistema Endócrino','Em qual região do corpo fica a hipófise?',
+ ['Na base do encéfalo.','Sobre os rins.','No pescoço.','Atrás do estômago.'],'A','A hipófise fica na base do encéfalo, logo abaixo do hipotálamo.'),
+Q('h6','Sistema Endócrino','As glândulas suprarrenais recebem esse nome por causa da sua localização. Elas ficam:',
+ ['no pescoço.','na base do cérebro.','sobre os rins.','dentro dos ossos.'],'C','“Supra” significa acima: as suprarrenais ficam sobre os rins.'),
+Q('h7','Sistema Endócrino','Qual hormônio, produzido pela hipófise, controla o crescimento do corpo?',
+ ['Adrenalina.','Insulina.','Calcitonina.','Hormônio do crescimento (GH).'],'D','O GH (somatotropina) é produzido pela hipófise e controla o crescimento corporal.'),
+Q('h8','Sistema Endócrino','Uma pessoa está com o metabolismo muito acelerado: gasta energia demais, emagrece e se sente agitada. Qual glândula pode estar produzindo hormônios em excesso?',
+ ['Tireoide.','Pâncreas.','Ovários.','Testículos.'],'A','A tireoide produz T3 e T4, que controlam a velocidade do metabolismo (gasto de energia).'),
+Q('h9','Sistema Endócrino','A calcitonina, produzida pela tireoide, participa:',
+ ['da digestão das gorduras.','da fixação de cálcio nos ossos.','da produção de suor.','da visão no escuro.'],'B','Além do T3 e T4, a tireoide produz calcitonina, que ajuda a fixar cálcio nos ossos.'),
+Q('h10','Sistema Endócrino','O pâncreas é chamado de glândula mista porque:',
+ ['só produz suor e lágrimas.','fica metade no pescoço e metade no abdome.','além de lançar hormônios no sangue, produz um suco digestivo lançado no intestino.','só funciona durante a puberdade.'],'C','O pâncreas é endócrino (insulina e glucagon no sangue) e também exócrino (suco pancreático no intestino).'),
+Q('h11','Sistema Endócrino','Sobre a insulina e o glucagon, ambos produzidos pelo pâncreas, é correto afirmar que:',
+ ['os dois aumentam a glicose no sangue.','os dois controlam o crescimento dos ossos.','são produzidos pela tireoide.','têm ações opostas: a insulina baixa e o glucagon eleva a glicemia.'],'D','Os dois hormônios trabalham em equilíbrio para manter a glicose no sangue em níveis normais.'),
+Q('h12','Sistema Endócrino','No diabetes, o organismo não produz insulina suficiente ou não consegue usá-la bem. A principal consequência é:',
+ ['acúmulo de glicose no sangue (glicemia alta).','queda da glicose no sangue até zero.','crescimento acelerado dos ossos.','aumento da produção de calcitonina.'],'A','Sem insulina agindo, a glicose não entra nas células e se acumula no sangue.'),
+Q('h13','Sistema Endócrino','O cortisol, hormônio ligado ao estresse, é produzido pelas glândulas:',
+ ['tireoide.','suprarrenais.','hipófise.','ovários.'],'B','As suprarrenais produzem adrenalina e cortisol, que preparam o corpo para situações de alerta e estresse.'),
+Q('h14','Sistema Endócrino','Antes de apresentar um trabalho para a turma, Lucas sentiu o coração disparar e as mãos suarem. Qual hormônio provocou essas reações?',
+ ['Insulina.','Calcitonina.','Adrenalina.','Estrogênio.'],'C','Em situações de tensão, as suprarrenais liberam adrenalina, que acelera os batimentos e a respiração.'),
+Q('h15','Sistema Endócrino','Quais são os principais hormônios produzidos pelos ovários?',
+ ['Testosterona e GH.','Insulina e glucagon.','Tiroxina e calcitonina.','Estrogênio e progesterona.'],'D','Os ovários produzem estrogênio e progesterona, que controlam o ciclo menstrual e as características femininas.'),
+Q('h16','Sistema Endócrino','A testosterona, produzida nos testículos, é responsável principalmente:',
+ ['pelas características sexuais secundárias masculinas, como voz grossa e pelos no rosto.','pelo controle da glicose no sangue.','pela fixação de cálcio nos ossos.','pelo ciclo menstrual.'],'A','A testosterona determina as características sexuais secundárias masculinas na puberdade.'),
+Q('h17','Sistema Endócrino','O ciclo menstrual é controlado principalmente por hormônios:',
+ ['da tireoide.','dos ovários, sob o comando da hipófise.','do pâncreas.','das suprarrenais.'],'B','Estrogênio e progesterona, produzidos nos ovários e regulados pela hipófise, controlam o ciclo menstrual.'),
+Q('h18','Sistema Endócrino','As características sexuais secundárias, como o crescimento das mamas ou o engrossamento da voz, surgem principalmente:',
+ ['no nascimento.','na velhice.','na puberdade.','somente depois dos 30 anos.'],'C','Na puberdade, a hipófise estimula as gônadas a produzirem mais hormônios sexuais.'),
+Q('h19','Sistema Endócrino','Os hormônios tróficos produzidos pela hipófise servem para:',
+ ['digerir os alimentos.','combater vírus.','transportar oxigênio.','estimular o funcionamento de outras glândulas, como a tireoide e as gônadas.'],'D','“Trófico” indica estímulo: esses hormônios comandam outras glândulas endócrinas.'),
+Q('h20','Sistema Endócrino','Qual das estruturas abaixo NÃO é uma glândula endócrina?',
+ ['Glândula sudorípara.','Pâncreas.','Tireoide.','Hipófise.'],'A','A glândula sudorípara lança o suor para fora do corpo; ela é exócrina, não endócrina.'),
+Q('h21','Sistema Endócrino','As glândulas salivares e sudoríparas lançam suas secreções para fora do corpo ou em cavidades, e não no sangue. Por isso, são classificadas como glândulas:',
+ ['endócrinas.','exócrinas.','hormonais.','nervosas.'],'B','Glândulas exócrinas lançam secreções para fora (suor) ou em cavidades (saliva na boca).'),
+Q('h22','Sistema Endócrino','A palavra homeostase significa:',
+ ['uma doença causada por hormônios.','um tipo de droga psicoativa.','a manutenção do equilíbrio interno do organismo.','o nome de uma glândula do pescoço.'],'C','Homeostase é o equilíbrio do meio interno, mantido pelos sistemas nervoso e endócrino.'),
+Q('h23','Sistema Endócrino','Quando o médico pede um exame de glicemia, ele quer saber:',
+ ['a quantidade de água no corpo.','o ritmo dos batimentos do coração.','a temperatura do corpo.','a taxa de glicose no sangue.'],'D','Glicemia é a concentração de glicose (açúcar) no sangue.'),
+Q('h24','Sistema Endócrino','Qual dupla glândula–localização está correta?',
+ ['Tireoide – pescoço.','Hipófise – sobre os rins.','Suprarrenais – base do encéfalo.','Pâncreas – dentro do crânio.'],'A','A tireoide fica no pescoço; a hipófise, na base do encéfalo; as suprarrenais, sobre os rins; o pâncreas, no abdome.'),
+Q('h25','Sistema Endócrino','O hormônio do crescimento (GH) tem papel muito importante:',
+ ['apenas depois dos 60 anos.','durante a infância e a adolescência, quando o corpo está crescendo.','apenas durante a gestação da mãe.','somente em animais, nunca em seres humanos.'],'B','O GH comanda o crescimento do corpo, principalmente na infância e na adolescência.'),
+/* ---- Integração Nervoso-Endócrina e Sentidos ---- */
+Q('h26','Órgãos dos Sentidos','Qual é a principal função dos órgãos dos sentidos (olhos, orelhas, nariz, língua e pele)?',
+ ['Produzir hormônios sexuais.','Digerir os alimentos.','Captar estímulos do ambiente e enviar informações ao sistema nervoso central.','Bombear o sangue pelo corpo.'],'C','Os sentidos captam luz, som, cheiro, sabor e dor e enviam sinais ao SNC.'),
+Q('h27','Integração Nervoso-Endócrina','O hipotálamo, estrutura que liga o sistema nervoso ao endócrino, está localizado:',
+ ['no encéfalo, logo acima da hipófise.','no pescoço, junto à tireoide.','sobre os rins.','dentro da medula dos ossos.'],'A','O hipotálamo fica no encéfalo e se comunica diretamente com a hipófise, logo abaixo dele.'),
+Q('h28','Integração Nervoso-Endócrina','Qual sequência representa corretamente a integração nervoso-endócrina?',
+ ['Hormônios → Sentidos → Hipotálamo → Hipófise.','Hipófise → Sentidos → Sangue → Hipotálamo.','Sangue → Hipófise → Sentidos → Encéfalo.','Sentidos (estímulo) → Encéfalo/Hipotálamo → Hipófise/glândulas → Hormônios no sangue → Ação.'],'D','O estímulo é captado, interpretado no SNC e, pelo hipotálamo e hipófise, vira resposta hormonal.'),
+Q('h29','Integração Nervoso-Endócrina','Os impulsos nervosos são mensagens elétricas que percorrem:',
+ ['os vasos sanguíneos.','os neurônios (nervos).','os ossos.','as glândulas sudoríparas.'],'B','O sistema nervoso usa neurônios para transmitir impulsos elétricos.'),
+Q('h30','Integração Nervoso-Endócrina','Os neurotransmissores são:',
+ ['substâncias químicas que passam a mensagem de um neurônio para outro.','hormônios produzidos pelo pâncreas.','células de defesa do sangue.','um tipo de droga ilícita.'],'A','Nas sinapses, os neurotransmissores levam a mensagem de um neurônio ao seguinte.'),
+Q('h31','Integração Nervoso-Endócrina','Ao encostar a mão numa panela quente, a pessoa tira a mão quase instantaneamente. Essa reação é um exemplo de:',
+ ['resposta hormonal lenta.','ação da insulina.','resposta rápida do sistema nervoso (reflexo de retirada).','efeito do hormônio do crescimento.'],'C','O reflexo de retirada é muito rápido porque depende de impulsos nervosos.'),
+Q('h32','Integração Nervoso-Endócrina','Qual situação é um exemplo de resposta endócrina, lenta e duradoura?',
+ ['Piscar quando um cisco se aproxima do olho.','Tirar a mão do fogo.','Virar a cabeça ao ouvir seu nome.','O crescimento do corpo ao longo dos anos.'],'D','O crescimento é controlado por hormônios (GH), com efeito lento e prolongado.'),
+Q('h33','Integração Nervoso-Endócrina','Ana sente cheiro de fumaça em casa e sai correndo, com o coração acelerado. Qual sequência explica o que aconteceu?',
+ ['O nariz captou o cheiro, o SNC interpretou o perigo e as suprarrenais liberaram adrenalina.','O pâncreas captou o cheiro e liberou insulina.','A tireoide sentiu o cheiro e reduziu o metabolismo.','Os ovários captaram o cheiro e liberaram progesterona.'],'A','Sentido capta o estímulo, o encéfalo interpreta e aciona as suprarrenais, que liberam adrenalina.'),
+Q('h34','Órgãos dos Sentidos','Os receptores da pele captam estímulos de:',
+ ['luz e cores.','sons e ruídos.','temperatura, pressão e dor.','sabores doces e salgados.'],'C','A pele é o órgão do tato: percebe calor, frio, pressão e dor.'),
+Q('h35','Integração Nervoso-Endócrina','Sobre os sistemas nervoso e endócrino, a afirmação correta é:',
+ ['eles competem entre si e um bloqueia o outro.','eles trabalham de forma integrada para manter o equilíbrio do corpo.','só um deles funciona de cada vez.','o sistema endócrino controla apenas a digestão.'],'B','Os dois sistemas atuam juntos, cada um com sua velocidade, para manter a homeostase.'),
+Q('h36','Integração Nervoso-Endócrina','Ao ver um carro vindo em alta velocidade, a primeira reação do corpo para desviar é comandada pelo sistema:',
+ ['endócrino, porque os hormônios agem em milésimos de segundo.','digestório.','urinário.','nervoso, porque transmite impulsos muito rápidos.'],'D','O sistema nervoso responde primeiro; a adrenalina vem em seguida e mantém o estado de alerta.'),
+Q('h37','Integração Nervoso-Endócrina','Depois de liberada pelas suprarrenais, a adrenalina chega ao coração e aos músculos:',
+ ['pela corrente sanguínea.','pelos nervos, como impulso elétrico.','pelo ar que respiramos.','pelo suco do estômago.'],'A','Todo hormônio é transportado pelo sangue até as células-alvo.'),
+Q('h38','Integração Nervoso-Endócrina','Qual destes é um efeito da adrenalina no organismo?',
+ ['Diminui os batimentos e provoca sono.','Baixa a glicose no sangue.','Acelera os batimentos e a respiração, preparando o corpo para reagir.','Engrossa a voz na puberdade.'],'C','A adrenalina prepara o corpo para lutar ou fugir: coração e respiração aceleram.'),
+Q('h39','Órgãos dos Sentidos','Os olhos são os órgãos dos sentidos responsáveis por captar:',
+ ['sons.','luz.','cheiros.','sabores.'],'B','Os olhos captam a luz e enviam a informação ao encéfalo, que forma as imagens.'),
+Q('h40','Órgãos dos Sentidos','Os sentidos captam os estímulos, mas quem os interpreta, permitindo que a gente entenda o que viu ou ouviu, é:',
+ ['o pâncreas.','a tireoide.','a própria pele.','o encéfalo, no sistema nervoso central.'],'D','O encéfalo recebe e interpreta os sinais vindos dos órgãos dos sentidos.'),
+Q('h41','Integração Nervoso-Endócrina','O Sistema Nervoso Central (SNC) é formado por:',
+ ['encéfalo e medula espinal.','nervos e glândulas.','coração e pulmões.','hipófise e tireoide.'],'A','O SNC reúne o encéfalo (dentro do crânio) e a medula espinal (dentro da coluna).'),
+Q('h42','Integração Nervoso-Endócrina','Comparado a um impulso nervoso, o efeito de um hormônio geralmente:',
+ ['começa e termina mais rápido.','demora mais para começar, mas dura mais tempo.','é instantâneo e some em segundos.','não chega a nenhum órgão.'],'B','Hormônios agem de forma mais lenta e prolongada; impulsos nervosos são rápidos e curtos.'),
+Q('h43','Órgãos dos Sentidos','Ao provar um alimento estragado, Pedro cuspiu na hora. O estímulo foi captado:',
+ ['pelas orelhas.','pela pele dos pés.','pelas papilas gustativas da língua.','pela tireoide.'],'C','A língua possui papilas gustativas, que percebem os sabores.'),
+Q('h44','Integração Nervoso-Endócrina','Na descida da montanha-russa, Júlia sentiu “frio na barriga” e o coração disparou. Quem atuou nessa reação?',
+ ['A tireoide, liberando calcitonina.','O pâncreas, liberando insulina.','Os ovários, liberando progesterona.','O sistema nervoso, acionando as suprarrenais para liberar adrenalina.'],'D','O medo é percebido pelo SNC, que aciona as suprarrenais a liberar adrenalina.'),
+Q('h45','Órgãos dos Sentidos','Além da audição, a orelha interna também participa:',
+ ['do equilíbrio do corpo.','da produção de insulina.','da digestão dos alimentos.','da percepção de cores.'],'A','A orelha interna tem estruturas que informam ao encéfalo a posição e o equilíbrio do corpo.'),
+/* ---- Drogas Psicoativas e Lícitas ---- */
+Q('h46','Drogas Psicoativas','As drogas psicoativas (psicotrópicas) recebem esse nome porque agem:',
+ ['apenas no estômago.','no Sistema Nervoso Central, alterando comportamento, humor e percepção.','somente nos ossos.','apenas na superfície da pele.'],'B','Drogas psicoativas atuam diretamente no SNC e modificam humor, percepção e consciência.'),
+Q('h47','Drogas Psicoativas','As drogas psicoativas alteram a transmissão dos impulsos nervosos em regiões de comunicação entre neurônios chamadas:',
+ ['alvéolos.','glândulas sudoríparas.','sinapses.','vasos linfáticos.'],'C','É nas sinapses que as drogas interferem na passagem da mensagem entre neurônios.'),
+Q('h48','Drogas Psicoativas','Qual das substâncias abaixo é uma droga depressora do SNC?',
+ ['Cocaína.','Anfetamina.','LSD.','Calmantes (ansiolíticos).'],'D','Calmantes diminuem a atividade cerebral, por isso são depressores.'),
+Q('h49','Drogas Psicoativas','Qual das substâncias abaixo é um estimulante do SNC?',
+ ['Cocaína.','Álcool.','Inalantes (cola, solventes).','Calmantes.'],'A','A cocaína acelera a atividade cerebral, gerando agitação e taquicardia.'),
+Q('h50','Drogas Psicoativas','Uma pessoa relatou ver cores e formas que não existiam e perdeu a noção do tempo depois de usar uma substância. Esses efeitos são típicos de drogas:',
+ ['depressoras.','estimulantes.','perturbadoras (alucinógenas).','lícitas medicinais.'],'C','Drogas perturbadoras distorcem a percepção de tempo, espaço e imagens.'),
+Q('h51','Drogas Psicoativas','A cafeína, presente no café e em energéticos, quando consumida em excesso age como droga:',
+ ['depressora.','estimulante.','perturbadora.','antibiótica.'],'B','A cafeína em excesso acelera o SNC, podendo causar insônia e agitação.'),
+Q('h52','Drogas Psicoativas','Os inalantes, como cola de sapateiro e solventes, são classificados como drogas:',
+ ['estimulantes.','perturbadoras.','hormonais.','depressoras.'],'D','Segundo o capítulo, inalantes estão no grupo das depressoras, ao lado do álcool e dos calmantes.'),
+Q('h53','Drogas Psicoativas','Quais efeitos são característicos das drogas estimulantes?',
+ ['Agitação, insônia e taquicardia.','Sono profundo e reflexos lentos.','Apenas alucinações visuais.','Diminuição dos batimentos do coração.'],'A','Estimulantes criam um estado de alerta artificial, com agitação, insônia e coração acelerado.'),
+Q('h54','Drogas Psicoativas','Quais efeitos são característicos das drogas depressoras?',
+ ['Taquicardia e insônia.','Atenção extremamente aguçada.','Sonolência, reflexos lentos e perda de coordenação.','Aumento da força muscular.'],'C','Depressoras “desaceleram” o cérebro, reduzindo atenção, reflexos e coordenação.'),
+Q('h55','Drogas Psicoativas','Um dos efeitos dos estimulantes é a taquicardia, que significa:',
+ ['respiração lenta.','coração batendo acelerado.','pressão muito baixa.','falta de apetite.'],'B','Taquicardia é o aumento da frequência dos batimentos cardíacos.'),
+Q('h56','Drogas Lícitas','O que caracteriza uma droga lícita?',
+ ['É uma droga que nunca causa danos.','É proibida no mundo inteiro.','Só existe dentro de hospitais.','Sua fabricação e venda são permitidas por lei, com restrição de idade ou receita.'],'D','Lícita quer dizer permitida por lei, o que não significa que seja segura.'),
+Q('h57','Drogas Lícitas','Qual grupo reúne apenas drogas lícitas?',
+ ['Álcool, cigarro e medicamentos.','Cocaína e LSD.','Maconha e cocaína.','LSD e anfetaminas ilegais.'],'A','Bebidas alcoólicas, cigarros e medicamentos têm venda permitida, com regras.'),
+Q('h58','Drogas Lícitas','O capítulo alerta: “Lícitas também causam dependência!”. Essa frase significa que:',
+ ['ser legal garante que a droga é segura.','apenas drogas ilícitas viciam.','mesmo permitidas por lei, essas drogas podem viciar e causar danos graves.','drogas lícitas fortalecem o cérebro.'],'C','Álcool e nicotina são legais para adultos, mas causam dependência e doenças.'),
+Q('h59','Drogas Lícitas','O álcool prejudica o equilíbrio e a coordenação dos movimentos porque afeta uma parte do encéfalo chamada:',
+ ['hipófise.','cerebelo.','tireoide.','pâncreas.'],'B','O cerebelo controla equilíbrio e coordenação; por isso quem bebe perde a firmeza nos movimentos.'),
+Q('h60','Consequências do Abuso','O abuso de álcool por muitos anos pode causar uma doença grave no fígado chamada:',
+ ['enfisema.','diabetes.','bronquite.','cirrose.'],'D','A cirrose é um dano grave e muitas vezes irreversível ao fígado.'),
+Q('h61','Drogas Lícitas','O enfisema pulmonar, em que os alvéolos são destruídos e a pessoa sente falta de ar, está fortemente associado:',
+ ['ao tabagismo.','ao consumo de água.','ao excesso de sono.','à prática de esportes.'],'A','As substâncias tóxicas do cigarro destroem os alvéolos pulmonares.'),
+Q('h62','Drogas Lícitas','Qual substância presente no cigarro é a principal responsável pela dependência?',
+ ['Cafeína.','Glicose.','Nicotina.','Insulina.'],'C','A nicotina age no cérebro como estimulante e causa forte dependência.'),
+Q('h63','Drogas Lícitas','Pessoas que não fumam, mas convivem com fumantes e respiram a fumaça (fumantes passivos):',
+ ['ficam imunes às doenças do cigarro.','também se expõem às substâncias tóxicas e correm riscos à saúde.','recebem mais oxigênio.','nunca têm problemas respiratórios.'],'B','A fumaça carrega as mesmas substâncias tóxicas para quem está por perto.'),
+Q('h64','Drogas Lícitas','Sobre o cigarro eletrônico (vape), é correto afirmar que:',
+ ['é inofensivo porque solta só vapor de água.','não contém nenhuma substância química.','cura o vício em cigarro sem riscos.','também pode conter nicotina, causando dependência e danos à saúde.'],'D','O vape também pode ter nicotina e outras substâncias que prejudicam os pulmões.'),
+Q('h65','Drogas Lícitas','As milhares de substâncias tóxicas presentes na fumaça do cigarro estão ligadas principalmente:',
+ ['ao câncer de pulmão.','ao crescimento saudável.','à melhora da visão.','ao fortalecimento da imunidade.'],'A','O cigarro está associado ao câncer de pulmão, ao enfisema e a doenças do coração.'),
+Q('h66','Drogas Lícitas','Por que o consumo de álcool é ainda mais perigoso na adolescência?',
+ ['Porque adolescentes eliminam o álcool mais rápido.','Porque o corpo do adolescente não absorve álcool.','Porque o cérebro ainda está em desenvolvimento e pode ser prejudicado.','Porque não há diferença entre adolescentes e adultos.'],'C','O cérebro do adolescente ainda está amadurecendo e é mais sensível aos danos do álcool.'),
+Q('h67','Drogas Psicoativas','Os calmantes (ansiolíticos), vendidos somente com receita médica, são classificados como:',
+ ['estimulantes do SNC.','depressores do SNC.','perturbadores do SNC.','vitaminas.'],'B','Calmantes diminuem a atividade cerebral e podem causar dependência; por isso exigem receita.'),
+Q('h68','Drogas Psicoativas','As anfetaminas, que deixam a pessoa agitada e sem sono, são drogas:',
+ ['depressoras.','perturbadoras.','hormonais naturais.','estimulantes.'],'D','Anfetaminas aceleram o SNC, assim como a cocaína e a nicotina.'),
+Q('h69','Drogas Psicoativas','O LSD é produzido em laboratório, e a maconha vem de uma planta. Isso mostra que as drogas psicoativas:',
+ ['podem ter origem natural ou ser produzidas em laboratório (sintéticas).','só são perigosas quando são naturais.','sintéticas não agem no SNC.','naturais são sempre seguras.'],'A','Drogas psicoativas podem ser naturais ou sintéticas, e as duas podem fazer mal.'),
+Q('h70','Drogas Psicoativas','Rafael tomou muito café para virar a noite estudando e ficou com tremores, coração acelerado e sem conseguir dormir. Isso aconteceu por causa do efeito:',
+ ['depressor da cafeína.','alucinógeno da cafeína.','estimulante da cafeína em excesso.','da falta de insulina.'],'C','Em excesso, a cafeína estimula demais o SNC, causando insônia e taquicardia.'),
+/* ---- Consequências, Prevenção e Qualidade de Vida ---- */
+Q('h71','Consequências do Abuso','A dependência psicológica de uma droga acontece quando a pessoa:',
+ ['precisa de doses cada vez menores.','sente forte vontade de usar a droga para se sentir bem, mesmo sabendo dos riscos.','fica imune aos efeitos da droga.','está se curando do vício.'],'B','Na dependência psicológica, a pessoa sente que precisa da droga para ter prazer ou alívio.'),
+Q('h72','Consequências do Abuso','Um fumante começou com 2 cigarros por dia e hoje precisa de 20 para sentir o mesmo efeito. Esse fenômeno é chamado de:',
+ ['abstinência.','homeostase.','tolerância.','vacinação.'],'C','Tolerância: o corpo se adapta e passa a exigir doses maiores para o mesmo efeito.'),
+Q('h73','Consequências do Abuso','Quais sintomas são típicos da síndrome de abstinência?',
+ ['Mais energia e alegria.','Apenas fome excessiva.','Crescimento acelerado.','Tremores, irritabilidade e mal-estar na falta da droga.'],'D','A abstinência surge quando um organismo dependente fica sem a substância.'),
+Q('h74','Consequências do Abuso','Além dos danos físicos, o abuso de drogas está associado a transtornos mentais como:',
+ ['depressão e ansiedade.','miopia e astigmatismo.','cárie e gengivite.','fraturas nos ossos.'],'A','O capítulo cita depressão e ansiedade entre as consequências do abuso de drogas.'),
+Q('h75','Prevenção','Numa festa, colegas insistem para você experimentar um cigarro eletrônico. Qual atitude mostra autoestima e protege sua saúde?',
+ ['Aceitar para não ficar de fora do grupo.','Experimentar só um pouquinho.','Dizer não com segurança e procurar amigos ou um adulto de confiança.','Esconder dos pais e experimentar depois.'],'C','Uma autoestima fortalecida ajuda a resistir à pressão do grupo.'),
+Q('h76','Prevenção','Qual destas situações é um fator de proteção contra o uso de drogas?',
+ ['Isolar-se dos amigos e da família.','Praticar esportes e participar de atividades culturais.','Dormir pouco todas as noites.','Ignorar as informações científicas sobre drogas.'],'B','Esporte, cultura e lazer saudável estão entre os fatores de proteção citados no capítulo.'),
+Q('h77','Qualidade de Vida','Dormir bem é um dos pilares da qualidade de vida porque:',
+ ['o sono é perda de tempo.','só bebês precisam dormir.','dormir causa doenças.','permite a recuperação do corpo e do cérebro, melhorando memória e humor.'],'D','O sono reparador recupera o organismo e ajuda na aprendizagem e no bem-estar.'),
+Q('h78','Qualidade de Vida','Qual atitude cuida do bem-estar emocional?',
+ ['Conversar sobre os sentimentos com pessoas de confiança.','Guardar todos os problemas só para si.','Passar a madrugada nas telas.','Tomar energéticos para aguentar o cansaço.'],'A','Falar sobre o que sente com pessoas de confiança fortalece a saúde emocional.'),
+Q('h79','Qualidade de Vida','Qual escolha contribui para uma alimentação saudável?',
+ ['Trocar a água por energéticos.','Pular refeições com frequência.','Fazer refeições equilibradas, com frutas, verduras, legumes e água.','Comer apenas doces e salgadinhos.'],'C','Alimentação equilibrada é um dos pilares do bem-estar físico.'),
+Q('h80','Prevenção','Qual é o papel da escola na prevenção ao uso de drogas?',
+ ['Evitar falar sobre o assunto.','Oferecer informação científica e espaço para o diálogo.','Punir sem explicar os motivos.','Incentivar a experimentação.'],'B','A escola previne com informação verdadeira e diálogo aberto.'),
+Q('h81','Prevenção','Por que o diálogo aberto na família protege os jovens contra as drogas?',
+ ['Porque os pais devem proibir qualquer conversa.','Porque serve apenas para vigiar.','Porque não tem relação com o assunto.','Porque o jovem se sente acolhido e confia para pedir ajuda e tirar dúvidas.'],'D','Família acolhedora é um dos fatores de proteção mais fortes.'),
+Q('h82','Consequências do Abuso','O uso contínuo de drogas pode causar danos irreversíveis em órgãos como:',
+ ['fígado, pulmões e coração.','apenas cabelo e unhas.','nenhum órgão do corpo.','somente os dentes.'],'A','O capítulo cita danos ao fígado (cirrose), aos pulmões e ao coração.'),
+Q('h83','Consequências do Abuso','A dependência química acontece quando:',
+ ['a pessoa consegue parar quando quiser, sem sintomas.','a droga funciona como uma vacina.','o organismo passa a precisar da substância e sofre sem ela.','a pessoa toma apenas vitaminas.'],'C','Na dependência química, a falta da droga provoca sintomas físicos (abstinência).'),
+Q('h84','Qualidade de Vida','Passar muitas horas seguidas nas telas, principalmente à noite, pode prejudicar:',
+ ['nada; não traz nenhum efeito.','o sono, a atenção e a convivência com outras pessoas.','apenas os dentes.','somente o crescimento das unhas.'],'B','Excesso de telas atrapalha o sono e o equilíbrio entre bem-estar físico, mental e social.'),
+Q('h85','Qualidade de Vida','A prática regular de atividade física traz quais benefícios?',
+ ['Aumenta o risco de doenças.','Só serve para atletas profissionais.','Causa dependência química.','Melhora o humor, a saúde do coração e a autoestima.'],'D','Exercícios fortalecem corpo e mente e também protegem contra as drogas.'),
+/* ---- Medicamentos ---- */
+Q('h86','Medicamentos','Os medicamentos são produzidos com a finalidade de:',
+ ['prevenir, diagnosticar ou curar doenças.','substituir a alimentação.','dar energia extra para estudar.','dispensar a consulta médica.'],'A','Medicamentos existem para cuidar da saúde, sempre com orientação adequada.'),
+Q('h87','Medicamentos','Qual é a ordem correta das etapas de produção de um medicamento?',
+ ['Venda → testes → pesquisa.','Ensaios clínicos → pesquisa → venda.','Pesquisa em laboratório → testes pré-clínicos → ensaios clínicos → aprovação.','Aprovação → pesquisa → testes.'],'C','Primeiro vem a pesquisa, depois os testes pré-clínicos, os ensaios em humanos e só então a aprovação.'),
+Q('h88','Medicamentos','Os ensaios clínicos de um novo medicamento são testes feitos:',
+ ['apenas em plantas.','em pessoas voluntárias, com acompanhamento médico.','somente por computador.','por qualquer pessoa em casa.'],'B','Nos ensaios clínicos, voluntários são acompanhados para avaliar eficácia, dose segura e efeitos colaterais.'),
+Q('h89','Medicamentos','Por que é importante ler a bula de um medicamento?',
+ ['Porque ela só traz propaganda.','Porque substitui a consulta médica.','Porque ensina a fabricar o remédio.','Porque informa dose, efeitos colaterais e contraindicações.'],'D','A bula orienta o uso correto, mas não substitui o médico.'),
+Q('h90','Medicamentos','Alguns medicamentos só podem ser vendidos com receita médica porque:',
+ ['podem causar dependência ou efeitos graves e exigem acompanhamento.','são mais gostosos.','são mais baratos.','as farmácias querem vender menos.'],'A','Remédios controlados, como calmantes, podem causar dependência.'),
+Q('h91','Medicamentos','Os antibióticos são medicamentos usados para combater:',
+ ['o vírus da gripe.','qualquer dor de cabeça.','infecções causadas por bactérias.','alergias.'],'C','Antibióticos agem contra bactérias; não funcionam contra vírus.'),
+Q('h92','Medicamentos','Quando antibióticos são usados de forma errada, algumas bactérias sobrevivem e se multiplicam. Isso leva ao surgimento de:',
+ ['bactérias benéficas.','bactérias resistentes, mais difíceis de combater.','uma vacina natural.','novos hormônios.'],'B','A resistência bacteriana torna infecções futuras muito mais difíceis de tratar.'),
+Q('h93','Medicamentos','O médico receitou um antibiótico por 7 dias, mas Bia melhorou no 3º dia. O correto é:',
+ ['parar de tomar imediatamente.','dobrar a dose para terminar antes.','dar o resto para o irmão.','completar o tratamento conforme a receita.'],'D','Interromper antes favorece a sobrevivência de bactérias resistentes.'),
+Q('h94','Medicamentos','Tomar analgésico toda vez que sente uma dor forte, sem procurar o médico, pode:',
+ ['esconder os sintomas de uma doença grave e atrasar o diagnóstico.','curar a doença definitivamente.','fortalecer o organismo.','não trazer risco nenhum.'],'A','A automedicação pode mascarar doenças graves.'),
+Q('h95','Medicamentos','Crianças pequenas podem se intoxicar com remédios em casa. Qual cuidado está correto?',
+ ['Deixar os remédios sobre a mesa.','Guardar os remédios junto com os doces.','Guardar fora do alcance das crianças, em local seco e arejado.','Tirar os comprimidos das embalagens.'],'C','Guardar corretamente evita intoxicações acidentais.'),
+Q('h96','Medicamentos','Sobre um medicamento com o prazo de validade vencido, é correto afirmar que:',
+ ['fica mais forte com o tempo.','pode perder o efeito ou fazer mal e não deve ser usado.','pode ser usado normalmente.','vira vitamina.'],'B','Remédio vencido deve ir para o ponto de coleta, e não ser consumido.'),
+Q('h97','Medicamentos e Ambiente','Restos de remédios e hormônios que chegam aos rios pelo esgoto prejudicam os peixes porque:',
+ ['deixam os peixes mais saudáveis.','nunca chegam aos rios.','só afetam plantas terrestres.','podem alterar o desenvolvimento e a reprodução dos animais aquáticos.'],'D','O esgoto comum não remove totalmente os fármacos, que afetam a fauna aquática.'),
+Q('h98','Medicamentos','Qual profissional, na farmácia, orienta sobre o uso correto dos medicamentos?',
+ ['Farmacêutico.','Engenheiro.','Bombeiro.','Arquiteto.'],'A','O farmacêutico orienta sobre dose, horários e cuidados com os remédios.'),
+Q('h99','Medicamentos','A automedicação é a prática de:',
+ ['tomar o remédio receitado pelo médico.','tomar uma vacina no posto de saúde.','tomar remédio por conta própria, sem orientação de um profissional.','ler a bula antes de usar.'],'C','Automedicar-se é usar remédios sem orientação, o que pode causar intoxicação e outros riscos.'),
+Q('h100','Medicamentos','Qual situação representa o uso racional de medicamentos?',
+ ['Usar o remédio que funcionou para o vizinho.','Seguir a dose e o horário prescritos pelo médico.','Aumentar a dose por conta própria.','Tomar o remédio junto com bebida alcoólica.'],'B','Uso racional é seguir a prescrição: o remédio certo, na dose e no tempo certos.')
+];
+</script>
+<script>
+"use strict";
+/* ================= ESTADO & SALVAMENTO ================= */
+const KEY='dueloHomeostase.v1', KEYQ='dueloHomeostase.customQ';
+const $=s=>document.querySelector(s);
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const uid=()=>Math.random().toString(36).slice(2,9);
+const isMobile=()=>window.matchMedia('(max-width:767px)').matches;
+function mkTeam(name,icon,color){return {id:uid(),name:name,icon:icon,color:color,pos:0,correct:0,wrong:0};}
+function defaultTeams(){return [mkTeam('Equipe Hipófise','hipofise',COLORS[0]),mkTeam('Equipe Neurônio','neuronio',COLORS[1]),mkTeam('Equipe Coração','coracao',COLORS[5]),mkTeam('Equipe Raio','raio',COLORS[3])];}
+function fresh(teams,config){return {phase:'setup',config:config||{size:15,minutes:40},teams:teams||defaultTeams(),turn:0,used:[],q:null,timeLeft:2400,running:false,warned:false,reason:null};}
+let S=fresh(), CUSTOM=[], restored=false, tab='board';
+try{const raw=localStorage.getItem(KEY); if(raw){const p=JSON.parse(raw); if(p&&Array.isArray(p.teams)&&p.teams.length>=2){S=Object.assign(fresh(),p); restored=S.phase!=='setup'; S.running=false;}}}catch(e){}
+try{CUSTOM=JSON.parse(localStorage.getItem(KEYQ)||'[]')||[];}catch(e){CUSTOM=[];}
+let lastSave=0;
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S)); lastSave=Date.now();}catch(e){}}
+function saveCustom(){try{localStorage.setItem(KEYQ,JSON.stringify(CUSTOM));}catch(e){}}
+const pool=()=>BANK.concat(CUSTOM);
+const getQ=id=>pool().find(q=>q.id===id);
+
+/* ================= ÁUDIO (Web Audio, sem arquivos) ================= */
+let AC=null;
+function ac(){try{if(!AC)AC=new (window.AudioContext||window.webkitAudioContext)(); if(AC.state==='suspended')AC.resume();}catch(e){} return AC;}
+function tone(f,t0,d,type,v){const c=ac(); if(!c)return; const o=c.createOscillator(),g=c.createGain(),t=c.currentTime+t0;
+  o.type=type||'sine'; o.frequency.value=f; g.gain.setValueAtTime(0.0001,t); g.gain.exponentialRampToValueAtTime(v||0.16,t+0.02); g.gain.exponentialRampToValueAtTime(0.0001,t+d);
+  o.connect(g); g.connect(c.destination); o.start(t); o.stop(t+d+0.05);}
+const SND={
+  warn(){tone(660,0,.4,'sine',.15);tone(880,.42,.55,'sine',.15);},
+  end(){[784,659,523,392].forEach((f,i)=>tone(f,i*.32,.7,'triangle',.2));},
+  consult(){tone(440,0,.22,'square',.06);tone(440,.28,.22,'square',.06);tone(330,.56,.55,'square',.07);},
+  start(){tone(880,0,.12,'sine',.12);},
+  good(){tone(523,0,.15,'triangle',.18);tone(659,.12,.15,'triangle',.18);tone(784,.24,.35,'triangle',.18);},
+  bad(){tone(240,0,.18,'triangle',.16);tone(190,.16,.35,'triangle',.16);},
+  tick(t){tone(1250,t,.03,'square',.025);},
+  win(){[523,659,784,1047].forEach((f,i)=>tone(f,i*.14,.5,'triangle',.18));}
+};
+
+/* ================= CRONÔMETRO GLOBAL ================= */
+let endAt=null, wakeLock=null;
+async function requestWake(){try{if(navigator.wakeLock&&!wakeLock){wakeLock=await navigator.wakeLock.request('screen'); wakeLock.addEventListener('release',()=>{wakeLock=null;});}}catch(e){}}
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&S.running)requestWake(); if(document.visibilityState==='hidden')save();});
+function syncTime(){if(S.running&&endAt)S.timeLeft=Math.max(0,(endAt-Date.now())/1000);}
+function startTimer(){if(S.timeLeft<=0)return; S.running=true; endAt=Date.now()+S.timeLeft*1000; requestWake(); save(); renderTimer();}
+function pauseTimer(){syncTime(); S.running=false; endAt=null; save(); renderTimer();}
+function fmt(s){s=Math.ceil(Math.max(0,s)); return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');}
+setInterval(()=>{
+  if(S.phase!=='game'||!S.running)return;
+  syncTime();
+  if(!S.warned&&S.timeLeft<=300&&S.timeLeft>0){S.warned=true; SND.warn(); toast('Faltam 5 minutos de partida!','warn');}
+  if(S.timeLeft<=0){S.running=false; endGame('tempo'); return;}
+  renderTimer();
+  if(Date.now()-lastSave>3000)save();
+},250);
+
+/* ================= AVISOS ================= */
+function toast(msg,kind){const el=document.createElement('div'); el.className='toast '+(kind||''); el.textContent=msg; $('#toasts').appendChild(el);
+  setTimeout(()=>{el.style.transition='opacity .3s'; el.style.opacity='0'; setTimeout(()=>el.remove(),320);},2900);}
+
+/* ================= AUXILIARES ================= */
+function initials(name){const w=String(name).replace(/^equipe\s+/i,'').trim().split(/\s+/).filter(Boolean); return ((w[0]||'?')[0]+(w[1]?w[1][0]:'')).toUpperCase();}
+function pawn(t,size,extra){return '<span class="pawn '+(size||'')+' '+(extra||'')+'" style="background:'+t.color+'" title="'+esc(t.name)+'">'+svg(t.icon)+'<em>'+esc(initials(t.name))+'</em></span>';}
+function specials(N){return {imp:[Math.round(N*.22),Math.round(N*.62)],bri:[Math.round(N*.42),Math.round(N*.82)]};}
+function specialAt(k){const sp=specials(S.config.size); return sp.imp.includes(k)?'imp':sp.bri.includes(k)?'bri':null;}
+function ranking(){return S.teams.map((t,i)=>Object.assign({},t,{i:i})).sort((a,b)=>b.pos-a.pos||b.correct-a.correct||a.wrong-b.wrong);}
+function show(id){['setup','game','end'].forEach(s=>$('#'+s).classList.toggle('on',s===id));}
+
+/* ================= CONFIGURAÇÃO ================= */
+function renderSetup(){
+  const n=S.teams.length, m=S.config.minutes, sp=specials(S.config.size);
+  $('#setupWrap').innerHTML=
+  '<header class="hero">'+
+    '<svg class="deco" viewBox="0 0 120 120" fill="none" stroke="#1D2B36" stroke-width="3" stroke-linecap="round"><circle cx="60" cy="60" r="16" fill="#F2B134"/><path d="M60 44V12M46 52 20 28M74 52l26-24M46 70 18 96M60 76v20l16 16M76 68l30 12"/><circle cx="60" cy="12" r="5" fill="#E8553E"/><circle cx="20" cy="28" r="5" fill="#0E7C7B"/><circle cx="100" cy="28" r="5" fill="#0E7C7B"/><circle cx="18" cy="96" r="5" fill="#E8553E"/><circle cx="106" cy="80" r="5" fill="#F2B134"/></svg>'+
+    '<div class="kicker">Ciências · 6º Ano · Capítulo 12</div>'+
+    '<h1>Duelo da<br><span>Homeostase</span></h1>'+
+    '<p>Tabuleiro de Ciências: do estímulo ao equilíbrio. Monte as equipes, escolha o tamanho da trilha e comece a partida.</p>'+
+  '</header>'+
+  '<section class="card sec"><h2>'+svg('users')+' Equipes <small>'+n+'</small></h2>'+
+    S.teams.map((t,i)=>
+    '<div class="trow">'+
+      '<div class="avatar">'+pawn(t,'xl')+'</div>'+
+      '<div><input class="inp" value="'+esc(t.name)+'" data-name="'+i+'" maxlength="28" aria-label="Nome da equipe">'+
+        '<div class="picks">'+TEAM_ICONS.map(k=>'<button class="pick '+(t.icon===k?'on':'')+'" data-act="pickIcon" data-i="'+i+'" data-v="'+k+'" title="'+ICON_NAMES[k]+'" aria-label="'+ICON_NAMES[k]+'">'+svg(k)+'</button>').join('')+'</div>'+
+        '<div class="swatches">'+COLORS.map(c=>'<button class="sw '+(t.color===c?'on':'')+'" style="background:'+c+'" data-act="pickColor" data-i="'+i+'" data-v="'+c+'" aria-label="Cor"></button>').join('')+'</div>'+
+      '</div>'+
+      '<button class="iconbtn" data-act="rmTeam" data-i="'+i+'" '+(n<=2?'disabled':'')+' aria-label="Remover equipe">'+svg('trash')+'</button>'+
+    '</div>').join('')+
+    '<button class="btn ghost block" data-act="addTeam" style="border-style:dashed">'+svg('plus')+' Adicionar equipe</button>'+
+  '</section>'+
+  '<div class="grid2">'+
+    '<section class="card sec"><h2>'+svg('board')+' Tabuleiro</h2>'+
+      '<div class="seg">'+[12,15,20].map(v=>'<button class="'+(S.config.size===v?'on':'')+'" data-act="size" data-v="'+v+'"><b>'+v+'</b><small>casas</small></button>').join('')+'</div>'+
+      '<div class="legend"><span class="chip imp">'+svg('raio')+' Impulso Nervoso: casas '+sp.imp.join(' e ')+'</span><span class="chip bri">'+svg('bridge')+' Ponte do Hipotálamo: casas '+sp.bri.join(' e ')+'</span></div>'+
+    '</section>'+
+    '<section class="card sec"><h2>'+svg('clock')+' Tempo da partida</h2>'+
+      '<div class="stepper"><button data-act="minDelta" data-d="-5" aria-label="Menos 5 minutos">−</button>'+
+      '<label><input type="number" id="minutes" min="1" max="180" value="'+m+'" inputmode="numeric"><span class="muted" style="font-weight:800">min</span></label>'+
+      '<button data-act="minDelta" data-d="5" aria-label="Mais 5 minutos">+</button></div>'+
+      '<p class="note">Alerta sonoro suave aos 5 minutos finais e ao zerar.</p>'+
+    '</section>'+
+  '</div>'+
+  '<div class="startbar"><button class="btn primary lg block" data-act="start" id="startBtn">'+svg('play')+' Iniciar Partida ('+fmt(m*60)+')</button></div>'+
+  '<div style="text-align:center;margin-top:6px"><button class="linkbtn" data-act="newq">+ Nova Questão <span>(banco: '+BANK.length+(CUSTOM.length?' + '+CUSTOM.length+' extras':'')+')</span></button></div>';
+}
+document.addEventListener('input',e=>{
+  const t=e.target;
+  if(t.dataset&&t.dataset.name!=null){const i=+t.dataset.name; S.teams[i].name=t.value; t.closest('.trow').querySelector('.avatar').innerHTML=pawn(S.teams[i],'xl'); save();}
+  if(t.id==='minutes'){const v=parseInt(t.value,10); if(v>0&&v<=180){S.config.minutes=v; $('#startBtn').innerHTML=svg('play')+' Iniciar Partida ('+fmt(v*60)+')'; save();}}
+});
+</script>
+<script>
+"use strict";
+/* ================= RENDER: JOGO ================= */
+let lastCols=0;
+function renderTimer(){
+  const el=$('#hudTimer'); if(!el)return;
+  const s=S.timeLeft;
+  el.className='htimer'+(S.running?'':' paused')+(s<=60?' danger':s<=300?' warn':'');
+  el.innerHTML=svg(S.running?'pause':'play')+'<b>'+fmt(s)+'</b>';
+  const big=$('#ctrlTime'); if(big)big.textContent=fmt(s);
+  const pb=$('#ctrlPause'); if(pb)pb.innerHTML=S.running?svg('pause')+' Pausar':svg('play')+' Retomar';
+}
+function renderHud(){
+  renderTimer();
+  const t=S.teams[S.turn];
+  $('#hudTurn').innerHTML=pawn(t)+'<span class="txt"><small>'+(S.q&&S.q.rebound?'Rebote':'Equipe da vez')+'</small><b>'+esc(t.name)+'</b></span>';
+  renderConsultUI();
+  ['board','question','teams'].forEach(k=>$('#tab-'+k).classList.toggle('on',tab===k));
+  $('#qdot').classList.toggle('on',!!S.q&&tab!=='question');
+}
+function setTab(k){
+  tab=k;
+  ['board','question','teams'].forEach(x=>$('#v-'+x).classList.toggle('active',x===k));
+  renderHud();
+  if(k==='board')requestAnimationFrame(()=>renderBoard(true));
+  const v=$('#v-'+k); if(v&&isMobile())v.scrollTop=0;
+}
+function boardCols(){const b=$('#board'), w=b?b.clientWidth:0; if(!w)return lastCols||4; return w<380?4:w<600?5:6;}
+function renderBoard(force,flashIdx){
+  const host=$('#v-board'), N=S.config.size;
+  if(!$('#board')||force===true){
+    host.innerHTML='<div class="bhead"><div><div class="kicker">Tabuleiro interativo</div><h2>Do Estímulo ao <span>Equilíbrio</span></h2></div><div class="count">'+N+' casas</div></div><div class="board" id="board"></div>'+
+      '<div class="legend"><span class="chip imp">'+svg('raio')+' Impulso Nervoso: +1 casa bônus</span><span class="chip bri">'+svg('bridge')+' Ponte do Hipotálamo: Roleta Bônus</span></div>'+
+      '<div class="roster" id="roster"></div>';
+  }
+  const board=$('#board'), cols=boardCols(); lastCols=cols;
+  board.style.gridTemplateColumns='repeat('+cols+',minmax(0,1fr))';
+  let html='<svg class="track" id="track"></svg>';
+  for(let k=0;k<=N;k++){
+    const row=Math.floor(k/cols), c=k%cols, col=row%2===0?c:cols-1-c, sp=specialAt(k);
+    let cls='cell', num='<span class="num">'+k+'</span>', lbl='';
+    if(k===0){cls+=' start'; num='<span class="num">Início</span>'; lbl='<span class="lbl">Estímulo</span>';}
+    else if(k===N){cls+=' goal'; lbl='<span class="lbl">'+svg('flag')+' Equilíbrio</span>';}
+    else if(sp==='imp'){cls+=' imp'; lbl='<span class="lbl">'+svg('raio')+' Impulso</span>';}
+    else if(sp==='bri'){cls+=' bri'; lbl='<span class="lbl">'+svg('bridge')+' Ponte</span>';}
+    if(flashIdx===k)cls+=' flash';
+    const here=S.teams.map((t,i)=>({t:t,i:i})).filter(o=>o.t.pos===k);
+    const title=k===0?'Início: Estímulo':k===N?'Casa final: Equilíbrio':sp==='imp'?'Casa '+k+': Impulso Nervoso (+1 casa bônus)':sp==='bri'?'Casa '+k+': Ponte do Hipotálamo (Roleta Bônus)':'Casa '+k;
+    html+='<div class="'+cls+'" data-cell="'+k+'" title="'+title+'" style="grid-row:'+(row+1)+';grid-column:'+(col+1)+'">'+num+lbl+
+      '<div class="pawns '+(here.length>3?'many':'')+'">'+here.map(o=>pawn(o.t,'',o.i===S.turn?'turn':'')).join('')+'</div></div>';
+  }
+  board.innerHTML=html;
+  $('#roster').innerHTML=S.teams.map((t,i)=>'<span class="r">'+pawn(t,'',i===S.turn?'turn':'')+esc(t.name)+' <span class="muted">· casa '+t.pos+'</span></span>').join('');
+  requestAnimationFrame(drawTrack);
+}
+function drawTrack(){
+  const board=$('#board'), svgEl=$('#track'); if(!board||!svgEl||!board.clientWidth)return;
+  const br=board.getBoundingClientRect(), pts=[];
+  board.querySelectorAll('.cell').forEach(c=>{const r=c.getBoundingClientRect(); pts[+c.dataset.cell]=[(r.left-br.left+r.width/2).toFixed(1),(r.top-br.top+r.height/2).toFixed(1)];});
+  const d='M'+pts.map(p=>p.join(' ')).join(' L');
+  svgEl.setAttribute('width',br.width); svgEl.setAttribute('height',br.height); svgEl.setAttribute('viewBox','0 0 '+br.width+' '+br.height);
+  svgEl.innerHTML='<path d="'+d+'" fill="none" stroke="#E2D4BC" stroke-width="16" stroke-linejoin="round" stroke-linecap="round"/><path d="'+d+'" fill="none" stroke="#1D2B36" stroke-width="2.5" stroke-dasharray="2 9" stroke-linecap="round" stroke-linejoin="round"/>';
+}
+new ResizeObserver(()=>{if(S.phase!=='game')return; if(boardCols()!==lastCols)renderBoard(); else drawTrack();}).observe(document.body);
+
+function renderQ(){
+  const el=$('#v-question'), total=pool().length, left=pool().filter(q=>!S.used.includes(q.id)).length, t=S.teams[S.turn];
+  el.style.setProperty('--teamc',t.color);
+  if(!S.q){
+    el.innerHTML='<div class="qcard empty">'+svg('question','big')+'<div class="kicker">Questão da rodada</div>'+
+      '<h2>Vez de <span style="color:'+t.color+'">'+esc(t.name)+'</span></h2>'+
+      '<p class="muted" style="margin:.2rem 0 1.1rem">'+left+' de '+total+' questões ainda não sorteadas</p>'+
+      '<button class="btn primary lg block" data-act="draw">'+svg('dice')+' Sortear Próxima Questão</button></div>'+
+      '<div style="text-align:center"><button class="linkbtn" data-act="newq">+ Nova Questão</button></div>';
+    return;
+  }
+  const q=getQ(S.q.id); if(!q){S.q=null; return renderQ();}
+  const st=S.q, L='ABCD';
+  const opts=q.opts.map((o,i)=>{
+    const out=st.elim.includes(i); let cls='opt'+(out?' elim':''), mark='';
+    if(st.revealed){ if(i===q.ans){cls+=' right'; mark=svg('check','mark');} else if(i===st.guess){cls+=' wrong'; mark=svg('x','mark');} }
+    else if(i===st.guess)cls+=' sel';
+    return '<button class="'+cls+'" data-act="guess" data-i="'+i+'" '+(st.revealed||out?'disabled':'')+'><span class="let">'+L[i]+'</span><span>'+esc(o)+'</span>'+mark+'</button>';
+  }).join('');
+  let mid='';
+  if(!st.revealed){
+    mid='<div class="consult"><button class="btn warn" data-act="consult" '+(st.rebound?'disabled':'')+'>'+svg('book')+' Consulta 20s</button><div class="cbar" id="cbar"><i></i></div><b id="csec">20s</b></div>'+
+      '<div class="cmsg" id="cmsg">Tempo esgotado! Fechem as apostilas!</div>'+
+      (st.rebound?'<p class="note"><b>Rebote:</b> esta equipe responde sem novo tempo de consulta.'+(st.elim.length?' Alternativas riscadas já foram tentadas.':'')+'</p>':'')+
+      '<button class="btn coral block" data-act="reveal">'+svg('eye')+' Revelar Gabarito e Explicação</button>';
+  } else {
+    const g=st.guess, verdict=g==null?'':(g===q.ans?' · palpite da equipe: '+L[g]+' (correto)':' · palpite da equipe: '+L[g]+' (incorreto)');
+    mid='<div class="explain '+(g!=null&&g!==q.ans?'miss':'')+'"><span class="v">Gabarito: '+L[q.ans]+verdict+'</span>'+esc(q.exp)+'</div>';
+  }
+  let acts;
+  if(st.closed){acts='<button class="btn primary full lg" data-act="closeRound">'+svg('skip')+' Encerrar rodada e passar a vez</button>';}
+  else{
+    acts='<button class="btn ok full lg" data-act="right">'+svg('check')+' Acertou! (+1 Casa + Roleta Bônus)</button>'+
+      '<button class="btn bad" data-act="wrong">'+svg('x')+(st.revealed?' Errou (Encerrar)':' Errou (Passar Rebote)')+'</button>'+
+      '<button class="btn ghost" data-act="skip">'+svg('skip')+' Pular Questão</button>';
+  }
+  el.innerHTML='<div class="qcard"><div class="qhead"><span class="tag">'+esc(q.tag)+'</span><span class="qnum">Sorteio '+st.n+' de '+total+'</span></div>'+
+    '<div class="turnstrip '+(st.rebound?'rebound':'')+'" style="--teamc:'+t.color+'">'+pawn(t,'lg')+'<div><small>'+(st.rebound?'Rebote · sem consulta':'Respondendo agora')+'</small><b>'+esc(t.name)+'</b></div></div>'+
+    '<p class="qtext">'+esc(q.text)+'</p>'+opts+mid+'<div class="actions">'+acts+'</div></div>'+
+    '<div style="text-align:center"><button class="linkbtn" data-act="newq">+ Nova Questão</button></div>';
+  renderConsultUI();
+}
+
+function renderTeams(){
+  const N=S.config.size;
+  $('#v-teams').innerHTML='<div class="ph"><h2>Equipes &amp; Placar</h2><span class="muted" style="font-size:.8rem;font-weight:700">Toque para passar a vez</span></div>'+
+    S.teams.map((t,i)=>'<div class="team '+(i===S.turn?'turn':'')+'" style="--teamc:'+t.color+'" data-act="setTurn" data-i="'+i+'" role="button">'+
+      pawn(t,'lg',i===S.turn?'turn':'')+
+      '<div style="min-width:0"><div class="nm">'+esc(t.name)+(i===S.turn?'<span class="vez">Vez</span>':'')+'</div>'+
+      '<div class="meta">Casa '+t.pos+'/'+N+' · '+t.correct+' acerto'+(t.correct===1?'':'s')+' · '+t.wrong+' erro'+(t.wrong===1?'':'s')+'</div>'+
+      '<div class="bar"><i style="width:'+(t.pos/N*100)+'%"></i></div></div>'+
+      '<div class="adj"><button data-act="adj" data-i="'+i+'" data-d="-1" aria-label="Recuar 1 casa">−</button><button data-act="adj" data-i="'+i+'" data-d="1" aria-label="Avançar 1 casa">+</button></div>'+
+    '</div>').join('')+
+    '<section class="card ctrl"><div class="kicker">Controles do professor</div><div class="big" id="ctrlTime">'+fmt(S.timeLeft)+'</div>'+
+      '<div class="row"><button class="btn primary" data-act="timer" id="ctrlPause"></button><button class="btn" data-act="resetTimer">'+svg('reset')+' Resetar</button></div>'+
+      '<div class="row"><button class="btn ghost" data-act="endNow">'+svg('trophy')+' Ver pódio</button><button class="btn ghost" data-act="newGame" style="color:var(--bad)">'+svg('trash')+' Nova Partida</button></div>'+
+      '<p class="note">A partida é salva automaticamente neste aparelho. “Nova Partida” apaga o salvamento.</p>'+
+    '</section>';
+  renderTimer();
+}
+function renderGame(flashIdx){renderHud(); renderBoard(false,flashIdx); renderQ(); renderTeams();}
+
+/* ================= PÓDIO ================= */
+function renderEnd(){
+  const r=ranking(), N=S.config.size, w=r[0];
+  const reason=S.reason==='final'?esc(w.name)+' chegou ao Equilíbrio (casa '+N+')!':S.reason==='tempo'?'Tempo esgotado! Classificação pela posição no tabuleiro e pelos acertos.':'Partida encerrada pelo professor.';
+  const col=(o,p)=>o?'<div class="pcol p'+p+'">'+pawn(o,'xl')+'<div class="pn">'+esc(o.name)+'</div><div class="pm">casa '+o.pos+' · '+o.correct+' acertos</div><div class="step">'+p+'º</div></div>':'<div></div>';
+  $('#endWrap').innerHTML='<div class="kicker">Fim de jogo · Pódio</div><h1>Homeostase alcançada!</h1><p class="reason">'+reason+'</p>'+
+    '<div class="podium">'+col(r[1],2)+col(r[0],1)+col(r[2],3)+'</div><div class="floor"></div>'+
+    '<div class="rank">'+r.map((o,i)=>'<div class="rr"><b class="n">'+(i+1)+'º</b>'+pawn(o)+'<b style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+esc(o.name)+'</b><span class="st">Casa '+o.pos+'/'+N+'<br>'+o.correct+' acertos · '+o.wrong+' erros</span></div>').join('')+'</div>'+
+    '<div class="endbtns"><button class="btn primary lg block" data-act="again">'+svg('reset')+' Reiniciar (mesmas equipes)</button>'+
+    (S.reason!=='final'&&S.timeLeft>0?'<button class="btn ghost block" data-act="backToGame">Voltar à partida</button>':'')+'</div>';
+}
+</script>
+<script>
+"use strict";
+/* ================= CONSULTA RELÂMPAGO (20s) ================= */
+let consult={on:false,endAt:0,done:false};
+function renderConsultUI(){
+  const rem=consult.on?Math.max(0,consult.endAt-Date.now()):(consult.done?0:20000), frac=rem/20000, sec=Math.ceil(rem/1000);
+  const bar=$('#cbar'); if(bar){bar.querySelector('i').style.transform='scaleX('+frac+')'; bar.classList.toggle('done',consult.done);}
+  const cs=$('#csec'); if(cs)cs.textContent=sec+'s';
+  const m=$('#cmsg'); if(m)m.classList.toggle('on',consult.done);
+  const h=$('#hudConsult'); if(h){h.classList.toggle('done',consult.done);
+    h.innerHTML='<i style="width:'+(consult.on?(1-frac)*100:0)+'%"></i>'+svg('book')+'<span>'+(consult.on?sec+'s':consult.done?'0s':'20s')+'</span>';}
+}
+function consultFrame(){
+  if(!consult.on)return;
+  if(Date.now()>=consult.endAt){consult.on=false; consult.done=true; SND.consult(); toast('Tempo esgotado! Fechem as apostilas!','bad'); renderConsultUI(); return;}
+  renderConsultUI(); requestAnimationFrame(consultFrame);
+}
+function startConsult(){
+  if(!S.q){toast('Sorteie uma questão antes da consulta.'); return;}
+  if(S.q.revealed){toast('Gabarito já revelado.'); return;}
+  if(S.q.rebound){toast('Rebote: sem novo tempo de consulta.','warn'); return;}
+  if(consult.on)return;
+  consult={on:true,endAt:Date.now()+20000,done:false}; SND.start(); toast('Consulta liberada: 20 segundos!','warn'); consultFrame();
+}
+function stopConsult(){consult={on:false,endAt:0,done:false}; renderConsultUI();}
+
+/* ================= MECÂNICA ================= */
+function drawQ(){
+  let av=pool().filter(q=>!S.used.includes(q.id));
+  if(!av.length){S.used=[]; av=pool(); toast('Banco esgotado: questões reembaralhadas.','warn');}
+  const q=av[Math.floor(Math.random()*av.length)];
+  S.used.push(q.id);
+  S.q={id:q.id,owner:S.turn,guess:null,elim:[],tried:[],revealed:false,rebound:false,closed:false,n:S.used.length};
+  stopConsult(); save(); renderGame();
+  if(isMobile())setTab('question');
+}
+let ctx=null;
+function moveTeam(i,d,special,c){
+  const t=S.teams[i], N=S.config.size;
+  t.pos=Math.max(0,Math.min(N,t.pos+d));
+  if(c)c.flash=t.pos;
+  if(t.pos>=N){if(c)c.win=true; return;}
+  if(special&&d>0&&c){
+    const sp=specialAt(t.pos);
+    if(sp==='imp'){toast('Impulso Nervoso! '+t.name+' avança +1 casa bônus.','warn'); t.pos=Math.min(N,t.pos+1); c.flash=t.pos; if(t.pos>=N)c.win=true;}
+    else if(sp==='bri'&&!c.bridgeUsed){c.bridgeUsed=true; c.spins++; toast('Ponte do Hipotálamo! Giro extra na Roleta Bônus.','good');}
+  }
+}
+function processSpins(){
+  save(); renderGame(ctx.flash);
+  if(ctx.win){SND.win(); setTimeout(()=>endGame('final'),900); return;}
+  if(ctx.spins>0){ctx.spins--; setTimeout(openWheel,ctx.firstSpinDone?250:450); return;}
+  const owner=ctx.owner; ctx=null; finishTurn(owner);
+}
+function finishTurn(owner){
+  S.turn=(owner+1)%S.teams.length; S.q=null; stopConsult(); save(); renderGame();
+  toast('Vez de '+S.teams[S.turn].name);
+}
+function actRight(){
+  if(!S.q)return;
+  const i=S.turn; S.teams[i].correct++; SND.good(); stopConsult();
+  ctx={team:i,owner:S.q.owner,spins:1,bridgeUsed:false,win:false,flash:null,firstSpinDone:false};
+  S.q=null;
+  moveTeam(i,1,true,ctx);
+  if(isMobile())setTab('board');
+  processSpins();
+}
+function actWrong(){
+  const q=S.q; if(!q)return;
+  S.teams[S.turn].wrong++; SND.bad(); stopConsult();
+  if(q.revealed){finishTurn(q.owner); return;}
+  q.tried.push(S.turn);
+  if(q.guess!=null&&!q.elim.includes(q.guess))q.elim.push(q.guess);
+  q.guess=null;
+  const n=S.teams.length; let nx=-1;
+  for(let k=1;k<n;k++){const j=(S.turn+k)%n; if(!q.tried.includes(j)){nx=j;break;}}
+  if(nx>=0&&q.elim.length<3){S.turn=nx; q.rebound=true; toast('Rebote para '+S.teams[nx].name+'! Sem consulta.','bad'); save(); renderGame(); return;}
+  q.revealed=true; q.closed=true; toast('Nenhuma equipe acertou. Gabarito revelado.'); save(); renderGame();
+}
+function actSkip(){if(!S.q)return; S.turn=S.q.owner; S.q=null; toast('Questão pulada.'); drawQ();}
+
+/* ================= ROLETA BÔNUS ================= */
+const SEGS=[{k:'extra',label:'+1 Casa Extra'},{k:'back',label:'Recuar 1 Casa de um Rival'},{k:'normal',label:'Avanço Normal'}];
+let wheelRot=0;
+$('#wheel').innerHTML=SEGS.map((s,i)=>'<div class="sl '+(i===2?'dark':'')+'" style="transform:rotate('+(i*120+60)+'deg)"><span>'+s.label+'</span></div>').join('');
+function openWheel(){
+  if(!ctx)return;
+  const t=S.teams[ctx.team];
+  $('#wTitle').innerHTML='Roleta Bônus · <span style="color:'+t.color+'">'+esc(t.name)+'</span>';
+  $('#wSub').textContent=ctx.firstSpinDone?'Ponte do Hipotálamo: giro extra!':'Acertou! Gire para ganhar seu bônus.';
+  $('#wRes').innerHTML='';
+  $('#wBtns').innerHTML='<button class="btn warn lg block" data-act="spin">'+svg('dice')+' Girar Roleta</button>';
+  openModal('mWheel');
+}
+function spin(){
+  $('#wBtns').innerHTML='';
+  const idx=Math.floor(Math.random()*3), c=idx*120+60+(Math.random()*70-35);
+  const target=(360-c+360)%360, cur=((wheelRot%360)+360)%360;
+  wheelRot+=1800+((target-cur+360)%360);
+  $('#wheel').style.transform='rotate('+wheelRot+'deg)';
+  for(let i=0;i<20;i++)SND.tick(2.7*Math.pow(i/20,1.8));
+  setTimeout(()=>wheelResult(idx),3000);
+}
+function wheelResult(idx){
+  if(!ctx)return;
+  ctx.firstSpinDone=true;
+  const seg=SEGS[idx], t=S.teams[ctx.team], cont='<button class="btn primary lg block" data-act="wheelCont">Continuar</button>';
+  if(seg.k==='extra'){
+    moveTeam(ctx.team,1,true,ctx); SND.good(); save(); renderGame(ctx.flash);
+    $('#wRes').innerHTML='<h4>+1 Casa Extra!</h4><p class="muted">'+esc(t.name)+' avança para a casa '+t.pos+'.</p>';
+    $('#wBtns').innerHTML=cont;
+  } else if(seg.k==='back'){
+    const rivals=S.teams.map((r,i)=>({r:r,i:i})).filter(o=>o.i!==ctx.team&&o.r.pos>0);
+    if(!rivals.length){
+      $('#wRes').innerHTML='<h4>Recuar 1 Casa de um Rival</h4><p class="muted">Nenhum rival saiu do início. Vale como Avanço Normal.</p>';
+      $('#wBtns').innerHTML=cont;
+    } else {
+      $('#wRes').innerHTML='<h4>Recuar 1 Casa de um Rival</h4><p class="muted">'+esc(t.name)+', escolha o alvo:</p>';
+      $('#wBtns').innerHTML='<div class="targets">'+rivals.map(o=>'<button data-act="wheelTarget" data-i="'+o.i+'">'+pawn(o.r,'lg')+esc(o.r.name)+'<small>casa '+o.r.pos+'</small></button>').join('')+'</div>';
+    }
+  } else {
+    $('#wRes').innerHTML='<h4>Avanço Normal</h4><p class="muted">'+esc(t.name)+' fica na casa '+t.pos+'.</p>';
+    $('#wBtns').innerHTML=cont;
+  }
+}
+function wheelTarget(i){
+  const r=S.teams[i]; r.pos=Math.max(0,r.pos-1); ctx.flash=r.pos; SND.bad();
+  toast(r.name+' recua para a casa '+r.pos+'.','bad'); closeModal(); processSpins();
+}
+
+/* ================= JANELAS ================= */
+let confirmFn=null;
+function openModal(id){document.querySelectorAll('.modal').forEach(m=>m.classList.remove('on')); $('#'+id).classList.add('on');}
+function closeModal(){document.querySelectorAll('.modal').forEach(m=>m.classList.remove('on'));}
+function askConfirm(title,msg,yes,fn){$('#cTitle').textContent=title; $('#cMsg').textContent=msg; $('#cYes').textContent=yes; confirmFn=fn; openModal('mConfirm');}
+function openNewQ(){
+  $('#nqTag').value=''; $('#nqText').value=''; $('#nqExp').value='';
+  $('#nqOpts').innerHTML='ABCD'.split('').map((L,i)=>'<div class="optrow"><input type="radio" name="nqAns" id="nqA'+i+'" value="'+i+'" '+(i===0?'checked':'')+'><label for="nqA'+i+'">'+L+'</label><input class="inp" id="nqO'+i+'" placeholder="Alternativa '+L+'"></div>').join('');
+  renderCustomList(); openModal('mNewQ');
+}
+function renderCustomList(){
+  $('#nqList').innerHTML=CUSTOM.length?'<div class="kicker" style="margin-bottom:4px">Questões extras salvas ('+CUSTOM.length+')</div>'+CUSTOM.map(q=>'<div class="ci"><span>'+esc(q.tag)+' · '+esc(q.text)+'</span><button class="iconbtn" data-act="delQ" data-id="'+q.id+'" aria-label="Excluir">'+svg('trash')+'</button></div>').join(''):'';
+}
+function saveQ(){
+  const text=$('#nqText').value.trim(), opts=[0,1,2,3].map(i=>$('#nqO'+i).value.trim());
+  if(!text||opts.some(o=>!o)){toast('Preencha o enunciado e as 4 alternativas.','bad'); return;}
+  const ans=+document.querySelector('input[name=nqAns]:checked').value;
+  CUSTOM.push({id:'c'+Date.now().toString(36),tag:$('#nqTag').value.trim()||'Questão Extra',text:text,opts:opts,ans:ans,exp:$('#nqExp').value.trim()||'Resposta correta: '+'ABCD'[ans]+'.'});
+  saveCustom(); toast('Questão adicionada ao banco!','good'); closeModal(); rerender();
+}
+
+/* ================= FLUXO GERAL ================= */
+function startGame(){
+  S.teams.forEach((t,i)=>{if(!t.name.trim())t.name='Equipe '+(i+1); t.pos=0; t.correct=0; t.wrong=0;});
+  const m=Math.max(1,Math.min(180,parseInt(S.config.minutes,10)||40)); S.config.minutes=m;
+  Object.assign(S,{phase:'game',turn:0,used:[],q:null,timeLeft:m*60,warned:false,reason:null});
+  ac(); SND.start(); show('game'); setTab('board'); renderBoard(true); renderGame(); startTimer();
+  toast('Partida iniciada! Vez de '+S.teams[0].name,'good');
+}
+function endGame(reason){
+  syncTime(); S.running=false; endAt=null; S.phase='end'; S.reason=reason; ctx=null;
+  closeModal(); stopConsult(); save(); show('end'); renderEnd(); window.scrollTo(0,0);
+  if(reason==='tempo')SND.end();
+}
+function newGame(){
+  const teams=S.teams.map(t=>mkTeam(t.name,t.icon,t.color)), cfg=Object.assign({},S.config);
+  try{localStorage.removeItem(KEY);}catch(e){}
+  S=fresh(teams,cfg); ctx=null; stopConsult(); closeModal(); show('setup'); renderSetup(); window.scrollTo(0,0);
+}
+function rerender(){if(S.phase==='setup')renderSetup(); else if(S.phase==='game')renderGame(); else renderEnd();}
+
+const ACT={
+  addTeam(){const used=S.teams.map(t=>t.icon), ic=TEAM_ICONS.find(k=>!used.includes(k))||TEAM_ICONS[S.teams.length%6];
+    const col=COLORS.find(c=>!S.teams.some(t=>t.color===c))||COLORS[S.teams.length%COLORS.length];
+    S.teams.push(mkTeam('Equipe '+(S.teams.length+1),ic,col)); save(); renderSetup();},
+  rmTeam(b){if(S.teams.length<=2)return; S.teams.splice(+b.dataset.i,1); save(); renderSetup();},
+  pickIcon(b){S.teams[+b.dataset.i].icon=b.dataset.v; save(); renderSetup();},
+  pickColor(b){S.teams[+b.dataset.i].color=b.dataset.v; save(); renderSetup();},
+  size(b){S.config.size=+b.dataset.v; save(); renderSetup();},
+  minDelta(b){S.config.minutes=Math.max(1,Math.min(180,(parseInt(S.config.minutes,10)||40)+(+b.dataset.d))); save(); renderSetup();},
+  start:startGame,
+  tab(b){if(isMobile())setTab(b.dataset.tab);},
+  timer(){if(S.running)pauseTimer(); else{if(S.timeLeft<=0)return; startTimer(); toast('Cronômetro retomado.');}},
+  resetTimer(){askConfirm('Resetar cronômetro?','O tempo volta para '+fmt(S.config.minutes*60)+' e fica pausado.','Resetar',()=>{pauseTimer(); S.timeLeft=S.config.minutes*60; S.warned=false; save(); renderTimer();});},
+  consult:startConsult,
+  draw:drawQ,
+  guess(b){const i=+b.dataset.i; if(!S.q||S.q.revealed||S.q.elim.includes(i))return; S.q.guess=S.q.guess===i?null:i; save(); renderQ();},
+  reveal(){if(!S.q)return; S.q.revealed=true; consult.on=false; if(S.q.guess!=null){const q=getQ(S.q.id); (S.q.guess===q.ans?SND.good:SND.bad)();} save(); renderGame();},
+  right:actRight, wrong:actWrong, skip:actSkip,
+  closeRound(){if(S.q)finishTurn(S.q.owner);},
+  setTurn(b){const i=+b.dataset.i; if(i===S.turn)return; S.turn=i; if(S.q&&!S.q.rebound)S.q.owner=i; save(); renderGame(); toast('Vez passada para '+S.teams[i].name);},
+  adj(b){const i=+b.dataset.i, d=+b.dataset.d, t=S.teams[i]; t.pos=Math.max(0,Math.min(S.config.size,t.pos+d)); save(); renderGame(t.pos);
+    if(t.pos>=S.config.size)askConfirm(t.name+' chegou ao Equilíbrio!','Encerrar a partida e mostrar o pódio?','Ver pódio',()=>endGame('final'));},
+  endNow(){askConfirm('Encerrar e ver o pódio?','A classificação usa a posição no tabuleiro e o número de acertos.','Ver pódio',()=>endGame('manual'));},
+  newGame(){askConfirm('Começar nova partida?','O salvamento atual (casas, tempo e questões sorteadas) será apagado. As equipes são mantidas para você editar.','Nova Partida',newGame);},
+  again:newGame,
+  backToGame(){S.phase='game'; save(); show('game'); setTab(tab); renderBoard(true); renderGame(); toast('Partida retomada. Cronômetro pausado.');},
+  spin:spin,
+  wheelCont(){closeModal(); processSpins();},
+  wheelTarget(b){wheelTarget(+b.dataset.i);},
+  newq:openNewQ, saveQ:saveQ,
+  delQ(b){CUSTOM=CUSTOM.filter(q=>q.id!==b.dataset.id); S.used=S.used.filter(id=>id!==b.dataset.id); saveCustom(); save(); renderCustomList(); toast('Questão excluída.');},
+  closeModal(){if($('#mWheel').classList.contains('on'))return; closeModal();},
+  confirmYes(){const f=confirmFn; confirmFn=null; closeModal(); if(f)f();}
+};
+document.addEventListener('click',e=>{const b=e.target.closest('[data-act]'); if(!b||b.disabled)return; ac(); const f=ACT[b.dataset.act]; if(f)f(b,e);});
+document.querySelectorAll('.modal').forEach(m=>m.addEventListener('click',e=>{if(e.target===m&&m.id!=='mWheel')closeModal();}));
+document.addEventListener('keydown',e=>{
+  if(S.phase!=='game'||/INPUT|TEXTAREA/.test(e.target.tagName)||document.querySelector('.modal.on'))return;
+  const k=e.key.toLowerCase(), idx='abcd'.indexOf(k);
+  if(idx>=0&&k.length===1&&S.q&&!S.q.revealed&&!S.q.elim.includes(idx)){S.q.guess=S.q.guess===idx?null:idx; save(); renderQ();}
+  else if(k==='r'&&S.q&&!S.q.revealed)ACT.reveal();
+  else if(k==='n'&&!S.q)drawQ();
+  else if(k===' '){e.preventDefault(); ACT.timer();}
+});
+
+/* ================= INÍCIO ================= */
+$('#tab-board .ti').innerHTML=svg('board'); $('#tab-question .ti').innerHTML=svg('question'); $('#tab-teams .ti').innerHTML=svg('users');
+if(S.phase==='game'){show('game'); setTab('board'); renderBoard(true); renderGame(); if(restored)setTimeout(()=>toast('Partida restaurada. Cronômetro pausado: toque nele para retomar.','warn'),300);}
+else if(S.phase==='end'){show('end'); renderEnd();}
+else{show('setup'); renderSetup();}
+</script>
+</body>
+</html>
